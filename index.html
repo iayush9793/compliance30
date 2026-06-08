@@ -125,10 +125,10 @@
                         </div>
                         <div>
                             <h5 class="text-sm font-bold text-white leading-tight">100% Convergence Match Achieved</h5>
-                            <p class="text-[11px] text-slate-400">Identical message payloads detected. Inspect the live structure inside the dashboard.</p>
+                            <p class="text-[11px] text-slate-400">Payload verified. Preview is pulled strictly from <strong class="text-indigo-400">Muskan Sharma</strong> (musk9090) to inspect actual inbox layout.</p>
                         </div>
                     </div>
-                    <button id="show-preview-btn" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center justify-center gap-2">
+                    <button id="show-preview-btn" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-magnifying-glass-chart"></i>
                         Show Mail Preview
                     </button>
@@ -221,7 +221,7 @@
             <!-- Modal Header -->
             <div class="px-8 py-6 border-b border-slate-800/60 bg-slate-900/20 flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-black uppercase tracking-wider">Network Integrity Preview</span>
+                    <span class="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-1 rounded-full font-black uppercase tracking-wider">Muskan Sharma Node Audit</span>
                     <h3 id="modal-subject" class="text-lg font-black text-white mt-1.5 line-clamp-1">Email Subject</h3>
                 </div>
                 <button id="close-modal-btn" class="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:text-white flex items-center justify-center transition-all">
@@ -232,12 +232,16 @@
             <div class="px-8 py-4 bg-slate-900/40 border-b border-slate-800/40 flex flex-wrap gap-4 items-center text-xs text-slate-400 font-semibold">
                 <div class="flex items-center gap-2">
                     <span class="text-slate-500">Audited Node:</span>
-                    <span id="modal-account" class="text-white font-bold">account-name</span>
+                    <span id="modal-account" class="text-emerald-400 font-bold">musk9090 (Muskan Sharma)</span>
                 </div>
                 <div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
                 <div class="flex items-center gap-2">
                     <span class="text-slate-500">Network Sync Time:</span>
                     <span id="modal-time" class="text-white font-mono">Jun 8 @ 02:57 PM</span>
+                </div>
+                <div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+                <div class="flex items-center gap-1 bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded text-[10px] font-bold">
+                    <i class="fa-solid fa-user-secret"></i> Unopened State Preserved
                 </div>
             </div>
             <!-- Modal Body Content (Decoded iFrame Viewport) -->
@@ -246,6 +250,17 @@
                 <div id="modal-body-fallback" class="hidden text-slate-300 whitespace-pre-wrap leading-relaxed font-mono text-sm"></div>
                 <!-- rich sandboxed viewport frame to isolate HTML content styles -->
                 <iframe id="modal-body-frame" class="w-full h-full min-h-[380px] border-0 rounded-2xl bg-white hidden" sandbox="allow-same-origin"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION BOX FOR FAILED MUSKAN PREVIEWS -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-rose-900/95 border border-rose-500/30 text-rose-100 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 font-semibold text-sm">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
+            <div>
+                <p class="font-bold">Muskan's Node Sync Issue</p>
+                <p class="text-xs text-rose-300/80">This subject line was not retrieved from the musk9090 node.</p>
             </div>
         </div>
     </div>
@@ -303,7 +318,8 @@
             modalAccount: document.getElementById('modal-account'),
             modalTime: document.getElementById('modal-time'),
             modalBodyFrame: document.getElementById('modal-body-frame'),
-            modalBodyFallback: document.getElementById('modal-body-fallback')
+            modalBodyFallback: document.getElementById('modal-body-fallback'),
+            toast: document.getElementById('toast-notification')
         };
 
         let lastResults = [];
@@ -460,7 +476,7 @@
                 dom.commonInput.value = topSubject;
                 dom.percent.className = "text-2xl font-black text-emerald-400 italic";
                 
-                // Show gorgeous live audit preview trigger when 100% Convergence Match is achieved!
+                // Show dynamic verification card when 100% Convergence Match is achieved
                 dom.previewTrigger.classList.remove('hidden');
             } else {
                 dom.previewTrigger.classList.add('hidden');
@@ -490,7 +506,7 @@
                 dom.toggleSpamBtn.classList.add('hidden');
             }
 
-            // Sync visual status of spam elements to global view state state variables
+            // Sync visual status of spam elements to global view state variables
             spamElements.forEach(el => {
                 if (showSpamEmails) {
                     el.classList.remove('hidden');
@@ -504,6 +520,12 @@
             const row = document.createElement('tr');
             row.className = "hover:bg-indigo-500/[0.03] transition-colors group animate-slide";
             
+            // Highlight Muskan Sharma account specifically in UI
+            const isMuskan = (accName === 'musk9090');
+            const accountLabel = isMuskan 
+                ? `<span class="text-indigo-400 font-black text-sm tracking-tight flex items-center gap-1.5"><i class="fa-solid fa-star text-xs text-amber-400 animate-pulse"></i>${accName}</span>` 
+                : `<span class="text-slate-200 font-black text-sm tracking-tight">${accName}</span>`;
+
             const hasData = subjects && subjects.length > 0;
             const statusHtml = hasData 
                 ? `<div class="flex items-center gap-1.5 justify-end text-[9px] font-black text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">VERIFIED INTERACTION</div>`
@@ -563,7 +585,7 @@
             }
 
             row.innerHTML = `
-                <td class="px-8 py-5"><span class="text-slate-200 font-black text-sm tracking-tight">${accName}</span></td>
+                <td class="px-8 py-5">${accountLabel}</td>
                 <td class="px-8 py-5"><span class="text-white font-mono text-xs font-black">${domain}</span></td>
                 <td class="px-8 py-5">${subjectsHtml}</td>
                 <td class="px-8 py-5 text-right">${statusHtml}</td>
@@ -630,50 +652,60 @@
             dom.sync.innerHTML = `<i class="fa-solid fa-bolt-lightning"></i><span class="tracking-widest uppercase">Sync Network</span>`;
         });
 
-        // 100% Match Preview Trigger Handler
+        // Show Toast Notification if Muskan Preview is unavailable
+        function showToast() {
+            dom.toast.classList.remove('translate-y-12', 'opacity-0');
+            dom.toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                dom.toast.classList.remove('translate-y-0', 'opacity-100');
+                dom.toast.classList.add('translate-y-12', 'opacity-0');
+            }, 5000);
+        }
+
+        // Preview Trigger Handler - STRICTLY targeting Muskan Sharma (musk9090)
         dom.showPreviewBtn.addEventListener('click', () => {
             if (lastResults.length === 0) return;
 
             // Grab the matching top subject value
             const targetSubject = dom.commonInput.value;
             
-            // Search inside our records for a match containing this subject
-            let matchedEmail = null;
-            let matchedAccount = "";
+            // Search inside records SPECIFICALLY for Muskan Sharma's account ("musk9090")
+            const muskanAccountName = "musk9090";
+            const muskanResult = lastResults.find(item => item.accName === muskanAccountName);
 
-            for (const item of lastResults) {
-                const found = item.subjects.find(s => s.subject === targetSubject);
-                if (found) {
-                    matchedEmail = found;
-                    matchedAccount = item.accName;
-                    break;
-                }
+            if (!muskanResult) {
+                // If Muskan's node is not synced or has no active data
+                showToast();
+                return;
             }
+
+            const matchedEmail = muskanResult.subjects.find(s => s.subject === targetSubject);
 
             if (matchedEmail) {
                 dom.modalSubject.textContent = matchedEmail.subject;
-                dom.modalAccount.textContent = matchedAccount;
+                dom.modalAccount.textContent = "musk9090 (Muskan Sharma)";
                 dom.modalTime.textContent = `${matchedEmail.date} @ ${matchedEmail.time}`;
 
-                // Check if rich content or plain snippet is available
+                // Check if rich HTML content or plain snippet is available
                 if (matchedEmail.body && matchedEmail.body.includes('<')) {
-                    // Injecting HTML content cleanly inside a secure sandboxed sandboxed Frame
                     dom.modalBodyFallback.classList.add('hidden');
                     dom.modalBodyFrame.classList.remove('hidden');
                     dom.modalBodyFrame.srcdoc = matchedEmail.body;
                 } else {
-                    // Fallback to text visualization
                     dom.modalBodyFrame.classList.add('hidden');
                     dom.modalBodyFallback.classList.remove('hidden');
-                    dom.modalBodyFallback.textContent = matchedEmail.body || matchedEmail.snippet || "No textual body received.";
+                    dom.modalBodyFallback.textContent = matchedEmail.body || matchedEmail.snippet || "No HTML body structure parsed.";
                 }
 
-                // Show Modal Container with elegant animation transition flow
+                // Open modal with smooth transitions
                 dom.previewModal.classList.remove('hidden');
                 setTimeout(() => {
                     dom.previewModal.classList.remove('opacity-0');
                     dom.previewModal.querySelector('div').classList.remove('scale-95');
                 }, 50);
+            } else {
+                // Muskan's node loaded but does not contain this specific converged subject line
+                showToast();
             }
         });
 
