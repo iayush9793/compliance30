@@ -117,15 +117,15 @@
                     </div>
                 </div>
 
-                <!-- Interactive Preview Trigger: Displayed only on 100% Convergence Match -->
+                <!-- Interactive Preview Trigger: Displayed only if mail landed in Muskan's Account -->
                 <div id="preview-trigger-container" class="hidden animate-slide mt-2 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400 flex-shrink-0">
                             <i class="fa-solid fa-circle-check text-lg"></i>
                         </div>
                         <div>
-                            <h5 class="text-sm font-bold text-white leading-tight">100% Convergence Match Achieved</h5>
-                            <p class="text-[11px] text-slate-400">Payload verified. Preview is pulled strictly from <strong class="text-indigo-400">Muskan Sharma</strong> (musk9090) to inspect actual inbox layout.</p>
+                            <h5 id="preview-trigger-title" class="text-sm font-bold text-white leading-tight">Mail Detected in Muskan's Account</h5>
+                            <p id="preview-trigger-desc" class="text-[11px] text-slate-400">Payload verified. Preview is pulled strictly from <strong class="text-indigo-400">Muskan Sharma</strong> (musk9090) to inspect actual inbox layout.</p>
                         </div>
                     </div>
                     <button id="show-preview-btn" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-indigo-600/30 active:scale-95 flex items-center justify-center gap-2">
@@ -311,6 +311,8 @@
 
             // Preview Modal Elements
             previewTrigger: document.getElementById('preview-trigger-container'),
+            previewTriggerTitle: document.getElementById('preview-trigger-title'),
+            previewTriggerDesc: document.getElementById('preview-trigger-desc'),
             showPreviewBtn: document.getElementById('show-preview-btn'),
             previewModal: document.getElementById('preview-modal'),
             closeModalBtn: document.getElementById('close-modal-btn'),
@@ -480,11 +482,7 @@
             if (topCount === totalAccounts) {
                 dom.commonInput.value = topSubject;
                 dom.percent.className = "text-2xl font-black text-emerald-400 italic";
-                
-                // Show dynamic verification card when 100% Convergence Match is achieved strictly in the inbox
-                dom.previewTrigger.classList.remove('hidden');
             } else {
-                dom.previewTrigger.classList.add('hidden');
                 if (topCount > 1) {
                     dom.commonInput.value = `Partial Match: "${topSubject}"`;
                     dom.percent.className = "text-2xl font-black text-indigo-400 italic";
@@ -493,6 +491,26 @@
                     dom.percent.textContent = "0%";
                     dom.percent.className = "text-2xl font-black text-slate-500 italic";
                 }
+            }
+
+            // NEW RULE: Show the preview trigger if email data is successfully retrieved in Muskan's node (musk9090)
+            const muskanAccountName = "musk9090";
+            const muskanResult = results.find(item => item.accName === muskanAccountName);
+            const hasMuskanMails = muskanResult && muskanResult.subjects && muskanResult.subjects.length > 0;
+
+            if (hasMuskanMails) {
+                dom.previewTrigger.classList.remove('hidden');
+                
+                // Adjust description depending on match status
+                if (topCount === totalAccounts) {
+                    dom.previewTriggerTitle.textContent = "100% Convergence Match Achieved";
+                    dom.previewTriggerDesc.innerHTML = `Payload verified across all network nodes. Preview is pulled strictly from <strong class="text-indigo-400">Muskan Sharma</strong> (musk9090).`;
+                } else {
+                    dom.previewTriggerTitle.textContent = "Mail Detected in Muskan's Account";
+                    dom.previewTriggerDesc.innerHTML = `Mail landed successfully on <strong class="text-indigo-400">Muskan Sharma's</strong> node (musk9090). Active preview is available for analysis.`;
+                }
+            } else {
+                dom.previewTrigger.classList.add('hidden');
             }
 
             // Calculate Spam visibility counters to configure toggle visibility
@@ -679,12 +697,16 @@
             const muskanResult = lastResults.find(item => item.accName === muskanAccountName);
 
             if (!muskanResult) {
-                // If Muskan's node is not synced or has no active data
                 showToast();
                 return;
             }
 
-            const matchedEmail = muskanResult.subjects.find(s => s.subject === targetSubject);
+            // Find a mail that matches the top common subject.
+            // If none matches (or match is less than 100%), fallback to Muskan's latest retrieved email.
+            let matchedEmail = muskanResult.subjects.find(s => s.subject === targetSubject);
+            if (!matchedEmail && muskanResult.subjects.length > 0) {
+                matchedEmail = muskanResult.subjects[0];
+            }
 
             if (matchedEmail) {
                 dom.modalSubject.textContent = matchedEmail.subject;
@@ -709,7 +731,7 @@
                     dom.previewModal.querySelector('div').classList.remove('scale-95');
                 }, 50);
             } else {
-                // Muskan's node loaded but does not contain this specific converged subject line
+                // Muskan's node loaded but does not contain a previewable subject line
                 showToast();
             }
         });
