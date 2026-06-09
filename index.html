@@ -128,7 +128,7 @@
                             <p class="text-[11px] text-slate-400">Payload verified. Preview is pulled strictly from <strong class="text-indigo-400">Muskan Sharma</strong> (musk9090) to inspect actual inbox layout.</p>
                         </div>
                     </div>
-                    <button id="show-preview-btn" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-indigo-500/20 active:scale-95 flex items-center justify-center gap-2">
+                    <button id="show-preview-btn" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-indigo-600/30 active:scale-95 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-magnifying-glass-chart"></i>
                         Show Mail Preview
                     </button>
@@ -260,7 +260,7 @@
             <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
             <div>
                 <p class="font-bold">Muskan's Node Sync Issue</p>
-                <p class="text-xs text-rose-300/80">This subject line was not retrieved from the musk9090 node.</p>
+                <p class="text-xs text-rose-300/80">This subject line was not retrieved from the musk9090 node or did not hit the inbox.</p>
             </div>
         </div>
     </div>
@@ -442,7 +442,12 @@
 
             const accountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
-                curr.subjects.forEach(s => acc[curr.accName].add(s.subject));
+                curr.subjects.forEach(s => {
+                    // STRICT RULE: Only map/count subjects that landed successfully in the INBOX (exclude SPAM)
+                    if (s.landing !== 'SPAM') {
+                        acc[curr.accName].add(s.subject);
+                    }
+                });
                 return acc;
             }, {});
 
@@ -476,7 +481,7 @@
                 dom.commonInput.value = topSubject;
                 dom.percent.className = "text-2xl font-black text-emerald-400 italic";
                 
-                // Show dynamic verification card when 100% Convergence Match is achieved
+                // Show dynamic verification card when 100% Convergence Match is achieved strictly in the inbox
                 dom.previewTrigger.classList.remove('hidden');
             } else {
                 dom.previewTrigger.classList.add('hidden');
