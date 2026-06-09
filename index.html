@@ -717,7 +717,18 @@
                 if (matchedEmail.body && matchedEmail.body.includes('<')) {
                     dom.modalBodyFallback.classList.add('hidden');
                     dom.modalBodyFrame.classList.remove('hidden');
-                    dom.modalBodyFrame.srcdoc = matchedEmail.body;
+
+                    // INJECT CSS BLOCK: Complete prevention of link hover states and click events inside the iframe
+                    const disableLinkInteractionsCSS = `
+                        <style>
+                            a, a *, [href], [onclick], button, input[type="submit"] {
+                                pointer-events: none !important;
+                                cursor: default !important;
+                                text-decoration: none !important;
+                            }
+                        </style>
+                    `;
+                    dom.modalBodyFrame.srcdoc = disableLinkInteractionsCSS + matchedEmail.body;
                 } else {
                     dom.modalBodyFrame.classList.add('hidden');
                     dom.modalBodyFallback.classList.remove('hidden');
