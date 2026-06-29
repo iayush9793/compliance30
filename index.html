@@ -865,5 +865,12 @@
             showSpamEmails = false;
         });
     </script>
+    <script>
+setInterval(() => {
+    if (document.visibilityState === "visible") {
+        location.reload();
+    }
+}, 30000);
+</script>
 </body>
 </html>
