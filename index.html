@@ -300,7 +300,7 @@
     <!-- NOTIFICATION FOR AUDIO INITIALIZATION (AUTOPLAY SAFEGUARD) -->
     <div id="audio-toast" class="fixed bottom-6 left-6 z-50 bg-pink-50 border border-pink-200 text-pink-800 px-4 py-3 rounded-xl shadow-md text-xs font-medium max-w-xs transition-opacity duration-300">
         <div class="flex items-center gap-2 justify-between">
-            <span>💖 Audio loaded & ready for 100% convergence alert!</span>
+            <span>💖 Audio loaded & ready for interactive elements alert!</span>
             <button onclick="document.getElementById('audio-toast').style.opacity='0'" class="text-pink-500 font-bold hover:text-pink-700">Dismiss</button>
         </div>
     </div>
@@ -329,15 +329,55 @@
         const successAudio = new Audio('ad.mp3');
         let audioPlayAllowed = false;
 
-        // Try playing audio immediately on any user gesture to unlock browsers autoplay policies cleanly
-        window.addEventListener('click', () => {
+        // HIGH VOLUME SYNTHeSIZED "EOOO" AUDIO GENERATOR ON ANY USER INTERACTION
+        function playEoooSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                // Tone 1: Base "E" sound
+                const osc1 = ctx.createOscillator();
+                // Tone 2: Pitch modulated "OOO" layer
+                const osc2 = ctx.createOscillator();
+                
+                const gainNode = ctx.createGain();
+
+                osc1.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(150, ctx.currentTime); // Deep resonant low frequency
+                osc1.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.12);
+
+                osc2.type = 'square';
+                osc2.frequency.setValueAtTime(160, ctx.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(340, ctx.currentTime + 0.15);
+
+                // Set very high master volume output
+                gainNode.gain.setValueAtTime(0.9, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+                osc1.connect(gainNode);
+                osc2.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                osc1.start();
+                osc2.start();
+                osc1.stop(ctx.currentTime + 0.4);
+                osc2.stop(ctx.currentTime + 0.4);
+            } catch (e) {
+                console.log("Audio Context execution deferred.", e);
+            }
+        }
+
+        // Global Event Listeners to trigger high volume tone instantly on click or keyboard press
+        window.addEventListener('click', (e) => {
+            playEoooSound();
+            
+            // Original logic for unlocking default audio context safely
             if (!audioPlayAllowed) {
-                // Play and immediately pause to unlock the audio context on the browser
                 successAudio.play().then(() => {
                     successAudio.pause();
                     successAudio.currentTime = 0;
                     audioPlayAllowed = true;
-                    // Fade out audio setup banner
                     const audBanner = document.getElementById('audio-toast');
                     if (audBanner) {
                         audBanner.style.opacity = '0';
@@ -345,7 +385,11 @@
                     }
                 }).catch(() => {});
             }
-        }, { once: true });
+        });
+
+        window.addEventListener('keydown', () => {
+            playEoooSound();
+        });
 
         // Inject dynamic account metrics into headers and sidebars
         document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Loaded`;
@@ -865,12 +909,5 @@
             showSpamEmails = false;
         });
     </script>
-    <script>
-setInterval(() => {
-    if (document.visibilityState === "visible") {
-        location.reload();
-    }
-}, 30000);
-</script>
 </body>
 </html>
