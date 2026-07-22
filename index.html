@@ -1,927 +1,755 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deliverability & Subject Line Analyzer</title>
-    <!-- Tailwind CSS -->
+    <title>JSG30 INBOXING | Panda Intelligence Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                },
-            },
-        };
-    </script>
     <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: linear-gradient(135deg, #f4f9f4 0%, #e8f5e9 100%);
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+        .header-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { 
+            width: 6px; 
+            height: 6px; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-track { 
+            background: #e8f5e9; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb { 
+            background: #2e7d32; 
+            border-radius: 10px; 
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(14px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in {
-            animation: fadeIn 0.25s ease-out forwards;
+        .animate-slide { 
+            animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-1deg) translateY(0); }
+            50% { transform: rotate(2deg) translateY(-5px); }
+        }
+        @keyframes floatLeaves {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(110vh) translateX(80px) rotate(360deg); opacity: 0; }
+        }
+
+        .animated-bamboo {
+            animation: sway 6s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
+        .leaf-particle {
+            position: fixed;
+            top: -50px;
+            color: #81c784;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            animation: floatLeaves 12s linear infinite;
+        }
+
+        @keyframes pandaGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(46, 125, 50, 0.15); }
+            50% { box-shadow: 0 0 25px rgba(46, 125, 50, 0.4); }
+        }
+        .glow-panda {
+            animation: pandaGlow 3s infinite;
         }
     </style>
 </head>
-<body class="h-full text-slate-800 bg-slate-50 flex flex-col font-sans selection:bg-slate-200">
+<body class="text-[#2c3e2e] min-h-screen selection:bg-green-200 overflow-x-hidden custom-scrollbar relative">
 
-    <div class="min-h-full flex flex-col lg:flex-row">
-        <!-- Sidebar Navigation -->
-        <aside class="w-full lg:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800">
-            <div class="p-4 sm:p-6">
-                <!-- App Logo & Branding -->
-                <div class="flex items-center gap-3 mb-6 lg:mb-8">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-900/50">
-                        <i class="fa-solid fa-square-poll-vertical"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-white text-base leading-tight tracking-tight">JSG30 Deliverability</h1>
-                        <p class="text-[11px] text-slate-400 font-medium">Subject & Folder Monitor</p>
-                    </div>
+    <div class="leaf-particle text-xl" style="left: 10%; animation-delay: 0s; animation-duration: 14s;"><i class="fa-solid fa-leaf"></i></div>
+    <div class="leaf-particle text-lg" style="left: 25%; animation-delay: 3s; animation-duration: 18s;"><i class="fa-solid fa-leaf"></i></div>
+    <div class="leaf-particle text-2xl" style="left: 55%; animation-delay: 1s; animation-duration: 16s;"><i class="fa-solid fa-leaf"></i></div>
+    <div class="leaf-particle text-sm" style="left: 75%; animation-delay: 5s; animation-duration: 12s;"><i class="fa-solid fa-leaf"></i></div>
+
+    <!-- Sidebar -->
+    <aside class="fixed left-0 top-0 h-full w-72 bg-white/90 backdrop-blur-md border-r-2 border-emerald-100 p-8 flex flex-col gap-10 hidden lg:flex z-50 shadow-xl shadow-emerald-900/5 overflow-hidden">
+        <div class="absolute -right-10 bottom-0 text-emerald-100/30 text-9xl pointer-events-none animated-bamboo">
+            <i class="fa-solid fa-tree"></i>
+        </div>
+
+        <div class="flex items-center gap-4 relative z-10">
+            <div class="w-14 h-14 bg-gradient-to-br from-[#111] via-[#222] to-[#333] rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-black/30 border-2 border-white glow-panda relative overflow-hidden">
+                <div class="flex gap-2 mb-0.5 mt-1">
+                    <span class="w-2.5 h-2.5 bg-white rounded-full flex items-center justify-center"><span class="w-1 h-1 bg-black rounded-full"></span></span>
+                    <span class="w-2.5 h-2.5 bg-white rounded-full flex items-center justify-center"><span class="w-1 h-1 bg-black rounded-full"></span></span>
                 </div>
-
-                <!-- Navigation Tabs/Links -->
-                <nav class="space-y-1">
-                    <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-400 font-semibold text-sm border border-indigo-500/20">
-                        <i class="fa-solid fa-chart-line w-4 text-center"></i>
-                        <span>Subject Line Scanner</span>
-                    </a>
-                    <a href="#common-section" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition-colors">
-                        <i class="fa-solid fa-bullseye w-4 text-center"></i>
-                        <span>Match Metrics</span>
-                    </a>
-                </nav>
+                <div class="w-3 h-2 bg-white rounded-b-full"></div>
             </div>
+            <div>
+                <h1 class="font-bold text-2xl tracking-tight text-[#111] leading-none header-font">JSG30 <span class="text-emerald-600">🐼</span></h1>
+                <p class="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-600 mt-1">Panda Inbox Suite</p>
+            </div>
+        </div>
 
-            <!-- Active Nodes Status Widget -->
-            <div class="p-4 m-4 bg-slate-800/70 rounded-xl border border-slate-700/60 text-xs hidden lg:block">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-bold">API Connection</span>
-                    <span class="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Ready
+        <nav class="flex flex-col gap-2 relative z-10">
+            <div class="text-[10px] uppercase font-bold text-[#556b2f] tracking-widest px-4 mb-2">Core Operations</div>
+            <a href="#" class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-700 text-white shadow-lg shadow-emerald-700/30 transition-all hover:scale-[1.02]">
+                <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                <span class="font-bold text-sm tracking-tight header-font">Subject Extractor</span>
+            </a>
+            <a href="#common-section" class="flex items-center gap-4 px-5 py-4 rounded-2xl hover:bg-emerald-50 text-emerald-800 transition-all border border-transparent hover:border-emerald-100">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span class="font-bold text-sm tracking-tight header-font">Deliverability Stats</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto p-5 bg-emerald-50/60 rounded-3xl border border-emerald-100/80 relative z-10">
+            <p class="text-[10px] text-emerald-700 mb-3 uppercase tracking-[0.15em] font-black">Network Monitor</p>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-[#4b5320]">Google Engine</span>
+                    <span class="text-emerald-600 flex items-center gap-1.5 font-extrabold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        ONLINE
                     </span>
                 </div>
-                <div class="flex items-center justify-between text-slate-300">
-                    <span class="text-slate-400">Master Nodes</span>
-                    <span id="sidebar-accounts-count" class="font-mono bg-slate-700 px-2 py-0.5 rounded text-white font-semibold">14 Active</span>
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-[#4b5320]">Total Nodes</span>
+                    <span id="sidebar-accounts-count" class="text-white bg-black px-2.5 py-0.5 rounded-lg text-[10px] font-black">12 Loaded</span>
                 </div>
             </div>
-        </aside>
+        </div>
+    </aside>
 
-        <!-- Main Content Workspace -->
-        <main class="flex-1 p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto w-full">
-            <!-- Header Banner -->
-            <header class="mb-6 sm:mb-8 border-b border-slate-200 pb-5 sm:pb-6">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                    <div>
-                        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">Subject Line & Delivery Monitor</h2>
-                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Scan last 3 subjects across <span id="header-accounts-count" class="font-semibold text-slate-700">14</span> accounts with precise delivery timestamps in seconds.</p>
-                    </div>
-                    <div id="active-mode-badge" class="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-slate-500"></span> Idle / Ready
-                    </div>
-                </div>
-            </header>
+    <!-- Main Workspace -->
+    <main class="lg:ml-72 p-6 md:p-10 max-w-6xl mx-auto relative z-10">
+        <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/60 p-6 rounded-[2rem] border border-emerald-100 shadow-sm relative overflow-hidden">
+            <div>
+                <h2 class="text-4xl font-bold text-black tracking-tight mb-2 header-font">Subject & Delivery <span class="text-emerald-600">Panda Matrix</span></h2>
+                <p class="text-emerald-800/80 text-sm font-medium">Extracting last 3 fields across <span id="header-accounts-count" class="text-white font-bold bg-emerald-700 px-2.5 py-0.5 rounded-md text-xs">12</span> monitoring assets.</p>
+            </div>
+            
+            <div class="w-full md:w-72 h-44 bg-emerald-50 rounded-[1.5rem] border-4 border-emerald-200 overflow-hidden shadow-inner flex items-center justify-center relative flex-shrink-0">
+                <img id="panda-gif-negative" src="https://image.s7.sfmc-content.com/lib/fe3e11717d64057d751472/m/1/69eefb75-c2a1-4cbe-af57-853077562ec8.gif" alt="Kung Fu No GIF" class="w-full h-full object-cover">
+                <img id="panda-gif-positive" src="https://image.s7.sfmc-content.com/lib/fe3e11717d64057d751472/m/1/5dfe8674-d2da-4d7d-b39d-76281212b07b.gif" alt="Choking Jack Black GIF" class="w-full h-full object-cover hidden">
+            </div>
+        </header>
 
-            <!-- Input & Execution Section -->
-            <section class="mb-6 sm:mb-8">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-                        <!-- Target Domains Textarea -->
-                        <div class="lg:col-span-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <label for="domain-input" class="text-xs font-bold uppercase tracking-wider text-slate-600">
-                                    Target Domains / Sender Email Addresses
-                                </label>
-                                <span class="text-[11px] text-slate-400 font-medium">One per line</span>
-                            </div>
-                            <textarea id="domain-input" 
-                                class="w-full h-28 sm:h-32 bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4 text-slate-800 font-mono text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none"
-                                placeholder="example-sender.com&#10;delivery-node.net"></textarea>
-                        </div>
-
-                        <!-- Action Controls -->
-                        <div class="flex flex-col sm:flex-row lg:flex-col justify-end gap-2.5 sm:gap-3">
-                            <!-- Check Inbox Button -->
-                            <button id="btn-check-inbox" type="button" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2.5">
-                                <i class="fa-solid fa-inbox text-sm sm:text-base"></i>
-                                <span>Check Inbox</span>
-                            </button>
-
-                            <!-- Check Spam Button -->
-                            <button id="btn-check-spam" type="button" class="w-full py-3 px-4 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2.5">
-                                <i class="fa-solid fa-triangle-exclamation text-sm sm:text-base"></i>
-                                <span>Check Spam</span>
-                            </button>
-
-                            <!-- Clear Workspace Button -->
-                            <button id="btn-clear" type="button" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-xl text-xs transition-all flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-rotate-left"></i>
-                                <span>Reset Inputs</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Commonality & Analytics Panel -->
-            <section id="common-section" class="hidden mb-6 sm:mb-8 animate-fade-in">
-                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-6">
-                    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 sm:gap-6">
-                        <!-- Top Identified Subject Input & Copy -->
-                        <div class="flex-1">
-                            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
-                                Primary Identified Subject Line
-                            </label>
-                            <div class="flex gap-2">
-                                <input id="common-subject-input" readonly
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none truncate"
-                                    placeholder="Scanning accounts for primary subjects...">
-                                <button id="copy-btn" title="Copy Subject Line" type="button"
-                                    class="px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-medium transition-all text-xs sm:text-sm flex items-center justify-center shrink-0">
-                                    <i class="fa-solid fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Match Convergence Rate Metric -->
-                        <div class="w-full md:w-64 bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Top Match Convergence</span>
-                                <span id="match-percent" class="text-base sm:text-lg font-extrabold text-indigo-600 font-mono">0%</span>
-                            </div>
-                            <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                                <div id="match-bar" class="bg-indigo-600 h-full w-0 transition-all duration-500"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Inbox Subject Lines Summary & Matching Percentage Table -->
-                    <div id="inbox-subjects-summary-container" class="hidden border-t border-slate-100 pt-5">
-                        <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                                <i class="fa-solid fa-inbox text-indigo-600"></i> Subject Lines & Match Distribution
-                            </h4>
-                            <span id="inbox-subjects-count" class="text-[11px] font-mono text-slate-400 font-medium">0 unique subjects</span>
-                        </div>
-                        <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl overflow-hidden">
-                            <div id="inbox-subjects-list" class="divide-y divide-slate-200/70 text-xs">
-                                <!-- Dynamic Subject Breakdown -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Email Preview Action Trigger -->
-                    <div id="preview-trigger-container" class="hidden pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-eye text-sm"></i>
-                            </div>
-                            <div>
-                                <h4 id="preview-trigger-title" class="text-sm font-bold text-slate-800">Email Found in Muskan Sharma Account</h4>
-                                <p id="preview-trigger-desc" class="text-xs text-slate-500">View safe sandboxed preview pulled from node <strong class="text-slate-700 font-semibold">musk9090</strong>.</p>
-                            </div>
-                        </div>
-                        <button id="show-preview-btn" type="button" class="w-full sm:w-auto px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold tracking-wide transition-all shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-envelope-open-text"></i>
-                            <span>Show Mail Preview</span>
+        <!-- Stats Section -->
+        <section id="common-section" class="hidden w-full pb-10">
+            <div class="w-full bg-white border-t-8 border-black rounded-[2.5rem] p-8 shadow-xl flex flex-col justify-between gap-6 shadow-emerald-900/5 border border-emerald-100">
+                <div>
+                    <label class="text-[10px] font-black text-emerald-700 uppercase tracking-widest mb-2 block">CONVERGENCE REAL-TIME RESULT</label>
+                    <div class="relative group">
+                        <input id="common-subject-input" readonly
+                            class="w-full bg-emerald-50/30 border border-emerald-100 rounded-2xl py-4 pl-6 pr-16 text-black font-bold text-base focus:outline-none transition-all group-hover:border-emerald-300"
+                            placeholder="Awaiting pipeline invocation sequence...">
+                        <button id="copy-btn" 
+                            class="absolute right-2 top-1/2 -translate-y-1/2 p-3.5 bg-black hover:bg-emerald-800 text-white rounded-xl transition-all active:scale-90 shadow-md">
+                            <i class="fa-solid fa-copy text-base"></i>
                         </button>
                     </div>
                 </div>
-            </section>
+                
+                <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6">
+                    <div class="flex-grow">
+                        <span class="text-[10px] text-emerald-800 font-black uppercase tracking-widest block mb-2">Inbox Convergence Velocity</span>
+                        <div class="w-full bg-emerald-100/50 h-4 rounded-full overflow-hidden border border-emerald-200">
+                            <div id="match-bar" class="bg-gradient-to-r from-emerald-600 to-green-500 h-full w-0 transition-all duration-500 rounded-full"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center px-6 py-3 bg-emerald-50 rounded-2xl border border-emerald-100 min-w-[110px]">
+                        <div class="text-center">
+                            <span class="text-[9px] text-emerald-800 font-black uppercase tracking-tighter block leading-none mb-1">Match Rate</span>
+                            <span id="match-percent" class="text-3xl font-bold text-black header-font italic">0%</span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Results Feed Table Card -->
-            <section class="mb-10">
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[350px] flex flex-col">
-                    <!-- Feed Table Header -->
-                    <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <h3 class="font-bold text-slate-900 text-xs sm:text-sm tracking-tight uppercase">Account Feed & Subject Analysis</h3>
-                            <div id="scan-progress" class="hidden flex items-center gap-2 text-xs text-indigo-600 font-medium">
-                                <i class="fa-solid fa-circle-notch animate-spin"></i> Scanning Node...
+                <div id="preview-trigger-container" class="hidden animate-slide mt-2 p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-black flex items-center justify-center text-white flex-shrink-0 text-xl shadow-md">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <div>
+                            <h5 id="preview-trigger-title" class="text-base font-bold text-black leading-tight">Mail Verified inside Audit Node</h5>
+                            <p id="preview-trigger-desc" class="text-xs text-[#4b5320] mt-0.5">Payload layout extracted safely.</p>
+                        </div>
+                    </div>
+                    <button id="show-preview-btn" class="w-full sm:w-auto px-6 py-3 bg-black hover:bg-emerald-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 flex items-center justify-center gap-2 header-font shadow-md">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                        Open Mail Payload View
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Form & Data Section -->
+        <div class="flex flex-col gap-8">
+            <section class="w-full">
+                <div class="bg-white border-2 border-emerald-100 rounded-[2.5rem] p-8 shadow-lg relative overflow-hidden">
+                    <div class="flex flex-col lg:flex-row gap-8 items-start relative z-10">
+                        <div class="flex-grow w-full">
+                            <div class="flex items-center justify-between mb-4">
+                                <label class="text-xs font-black text-emerald-800 uppercase tracking-[0.2em] header-font">Target Domains Node Scope</label>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold">BATCH SEQUENCE OK</span>
                             </div>
+                            <textarea id="domain-input" 
+                                class="w-full h-36 bg-emerald-50/20 border-2 border-emerald-100/80 rounded-2xl p-6 text-black placeholder:text-emerald-800/40 focus:outline-none focus:border-emerald-500 transition-all resize-none text-sm font-mono leading-relaxed shadow-inner"
+                                placeholder="example-sender.com&#10;delivery-node.net"></textarea>
                         </div>
-                        <div id="feed-status-summary" class="text-[11px] sm:text-xs font-medium text-slate-500">
-                            Awaiting scan initiation
+                        
+                        <!-- Dual Sync Buttons -->
+                        <div class="w-full lg:w-72 lg:pt-8 flex flex-col gap-3">
+                            <button id="sync-inbox-btn" 
+                                class="group w-full py-4 bg-gradient-to-r from-emerald-600 via-emerald-700 to-black hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-3 transition-all shadow-lg active:scale-[0.97] header-font tracking-wider border border-emerald-800">
+                                <i class="fa-solid fa-inbox group-hover:rotate-12 transition-transform duration-300"></i>
+                                <span class="uppercase">Sync Inbox</span>
+                            </button>
+                            <button id="sync-spam-btn" 
+                                class="group w-full py-4 bg-gradient-to-r from-amber-600 via-amber-700 to-stone-900 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm flex items-center justify-center gap-3 transition-all shadow-lg active:scale-[0.97] header-font tracking-wider border border-amber-800">
+                                <i class="fa-solid fa-shield-cat group-hover:rotate-12 transition-transform duration-300"></i>
+                                <span class="uppercase">Sync Spam</span>
+                            </button>
+                            <button id="clear-btn" class="hidden w-full py-2 text-emerald-800 hover:text-black text-xs font-bold transition-colors uppercase tracking-widest header-font">
+                                <i class="fa-solid fa-trash-can mr-1.5"></i> Clear Active Table
+                            </button>
                         </div>
-                    </div>
-
-                    <!-- Empty State -->
-                    <div id="empty-state" class="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 text-center">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
-                            <i class="fa-solid fa-inbox text-xl sm:text-2xl"></i>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-slate-700 mb-1">No Active Scan Data</h4>
-                        <p class="text-xs text-slate-400 max-w-sm">Enter target domains above and click <strong>Check Inbox</strong> or <strong>Check Spam</strong> to inspect subject lines and delivery times.</p>
-                    </div>
-
-                    <!-- Mobile-Optimized Table Container -->
-                    <div id="results-table-container" class="hidden flex-1 overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="hidden sm:table-header-group">
-                                <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider font-bold">
-                                    <th class="px-6 py-3.5">Account Node</th>
-                                    <th class="px-6 py-3.5">Target Domain</th>
-                                    <th class="px-6 py-3.5">Last 3 Subject Lines & Delivery Times</th>
-                                    <th class="px-6 py-3.5 text-right">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="results-body" class="divide-y divide-slate-200 sm:divide-slate-100 text-xs sm:text-sm">
-                                <!-- Dynamic rows inserted via JS -->
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </section>
-        </main>
-    </div>
 
-    <!-- Safe Mail Preview Modal -->
-    <div id="preview-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-white border border-slate-200 w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
-            <!-- Modal Header -->
-            <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-                <div>
-                    <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Node Audit: Muskan Sharma</span>
-                    <h3 id="modal-subject" class="text-sm sm:text-base font-bold text-slate-900 mt-1 line-clamp-1">Email Subject Line</h3>
+            <section class="w-full">
+                <div class="bg-white border-2 border-emerald-100 rounded-[2.5rem] overflow-hidden shadow-lg min-h-[450px] flex flex-col">
+                    <div class="px-8 py-6 border-b border-emerald-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-emerald-50/30">
+                        <h3 class="text-base font-bold text-black flex items-center gap-3 tracking-tight header-font">
+                            🐼 EXTRACTED METRIC SCOPE FEED
+                            <div id="scan-progress" class="hidden h-2 w-32 bg-emerald-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-black animate-pulse"></div>
+                            </div>
+                        </h3>
+                        
+                        <button id="toggle-spam-btn" class="hidden flex items-center gap-2 px-4 py-2 bg-white border-2 border-emerald-100 text-xs font-bold text-emerald-900 hover:bg-emerald-50 rounded-xl transition-all">
+                            <i id="toggle-spam-icon" class="fa-solid fa-eye-slash text-emerald-600"></i>
+                            <span id="toggle-spam-text">Show Spam Mails</span>
+                            <span id="spam-counter" class="bg-black text-white px-2 py-0.5 rounded text-[10px] font-mono">0</span>
+                        </button>
+                    </div>
+
+                    <div id="empty-state" class="flex-grow flex flex-col items-center justify-center py-24 text-center">
+                        <div class="w-24 h-24 bg-emerald-50 rounded-full flex flex-col items-center justify-center mb-6 border border-emerald-100 shadow-inner">
+                            <i class="fa-solid fa-paw text-4xl text-emerald-600/50"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-black mb-1 header-font">Bamboo Canopy Silent</h4>
+                        <p class="text-xs text-emerald-800/60 uppercase font-bold tracking-widest">Provide configuration criteria above to scan nodes</p>
+                    </div>
+
+                    <div id="results-table-container" class="hidden">
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-emerald-900 bg-emerald-50/50 text-[10px] uppercase tracking-[0.2em] font-black border-b border-emerald-100">
+                                        <th class="px-8 py-5 header-font">Identity Profile</th>
+                                        <th class="px-8 py-5 header-font">Probed Domain</th>
+                                        <th class="px-8 py-5 header-font">Retrieved Subjects (Inbox / Spam)</th>
+                                        <th class="px-8 py-5 text-right header-font">Node Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-body" class="divide-y divide-emerald-50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <button id="close-modal-btn" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-all text-sm shrink-0">
-                    <i class="fa-solid fa-xmark"></i>
+            </section>
+        </div>
+    </main>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden opacity-0 transition-all duration-300">
+        <div class="bg-white border-2 border-black w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] transform scale-95 transition-all duration-300">
+            <div class="px-8 py-6 border-b border-emerald-100 bg-emerald-50/20 flex items-center justify-between">
+                <div>
+                    <span id="modal-badge" class="text-[10px] bg-black text-white px-3 py-1 rounded-full font-black uppercase tracking-wider header-font">Audit Scope</span>
+                    <h3 id="modal-subject" class="text-xl font-bold text-black mt-2 header-font">Email Subject</h3>
+                </div>
+                <button id="close-modal-btn" class="w-10 h-10 rounded-full bg-emerald-50 hover:bg-black hover:text-white flex items-center justify-center transition-all text-black border border-emerald-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <!-- Modal Metadata Header -->
-            <div class="px-4 sm:px-6 py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2.5 sm:gap-4 items-center text-[11px] sm:text-xs text-slate-600 font-medium">
-                <div>
-                    <span class="text-slate-400">Account:</span>
-                    <span id="modal-account" class="font-bold text-slate-800">musk9090 (Muskan Sharma)</span>
-                </div>
-                <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
-                <div>
-                    <span class="text-slate-400">Timestamp:</span>
-                    <span id="modal-time" class="font-mono text-slate-800">N/A</span>
-                </div>
-                <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
-                <div>
-                    <span class="text-slate-400">Relative Delivery:</span>
-                    <span id="modal-seconds-ago" class="font-mono text-indigo-600 font-bold">0 seconds ago</span>
-                </div>
+            <div class="px-8 py-4 bg-emerald-50/10 border-b border-emerald-50 flex flex-wrap gap-4 items-center text-xs text-emerald-900/80 font-semibold">
+                <div><span class="text-emerald-700">Audited Core:</span> <span id="modal-account" class="text-black font-bold">--</span></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-300"></div>
+                <div><span class="text-emerald-700">Sync Timestamp:</span> <span id="modal-time" class="text-black font-mono">--</span></div>
             </div>
-            <!-- Modal Body Sandbox Viewport -->
-            <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100/50 relative min-h-[280px] sm:min-h-[350px]">
-                <div id="modal-body-fallback" class="hidden text-slate-800 whitespace-pre-wrap leading-relaxed font-mono text-xs bg-white p-4 sm:p-5 rounded-xl border border-slate-200"></div>
-                <iframe id="modal-body-frame" class="w-full h-full min-h-[300px] sm:min-h-[380px] border border-slate-200 rounded-xl bg-white hidden" sandbox="allow-same-origin"></iframe>
+            <div class="flex-grow overflow-y-auto p-8 bg-emerald-50/20 min-h-[350px]">
+                <div id="modal-body-fallback" class="hidden text-black whitespace-pre-wrap leading-relaxed font-mono text-sm bg-white p-6 rounded-2xl border border-emerald-100"></div>
+                <iframe id="modal-body-frame" class="w-full h-full min-h-[380px] border border-emerald-100 rounded-2xl bg-white hidden" sandbox="allow-same-origin"></iframe>
             </div>
         </div>
     </div>
 
     <!-- Notification Toast -->
-    <div id="toast-notification" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 transform translate-y-10 opacity-0 transition-all duration-200 pointer-events-none">
-        <div class="bg-slate-900 text-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl shadow-lg flex items-center gap-3 text-xs font-medium border border-slate-700 max-w-xs sm:max-w-md">
-            <i class="fa-solid fa-circle-info text-indigo-400 text-base shrink-0"></i>
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-black text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 border-2 border-emerald-500">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xl"></i>
             <div>
-                <p id="toast-title" class="font-bold">Notice</p>
-                <p id="toast-message" class="text-slate-300">Target subject not found in account node.</p>
+                <p id="toast-title" class="font-bold text-sm header-font">Node Disconnect Notice</p>
+                <p id="toast-desc" class="text-xs text-emerald-200">The requested account pipeline returned void.</p>
             </div>
         </div>
     </div>
 
-    <!-- AUDIO AUTOPLAY BANNER -->
-    <div id="audio-toast" class="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-lg text-xs font-medium max-w-xs transition-opacity duration-300">
-        <div class="flex items-center gap-2 justify-between">
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-volume-high text-indigo-400"></i> Audio alert initialized for 100% convergence!</span>
-            <button onclick="document.getElementById('audio-toast').style.opacity='0'" class="text-slate-400 font-bold hover:text-white ml-2">Dismiss</button>
-        </div>
-    </div>
-
+    <!-- Application Script -->
     <script>
         const CONFIG = {
             clientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
             clientSecret: "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",
             accounts: [
-                { name: "ashwinliveseedforall", type: "Opener", token: "1//0gub_tDUPkLESCgYIARAAGBASNwF-L9IrVdFJ0uMmaXYM4AG01a6r7Zpo3uDchB7DNXW0Rkt4oDojH3-9HCrZX5tr8uDFmABRRY0" },
-                { name: "asharyaliveseedacc", type: "Opener", token: "1//0guqANvb_X5K3CgYIARAAGBASNwF-L9IrqODXDbSdAtPz7GznJrXl0HXkUbcKQ9yqWwda563DfGtAbc8MlFkDZuja-SzHMG7WkXk" },
-                { name: "liveseedsformm", type: "Opener", token: "1//0gj4AZbhLjWK0CgYIARAAGBASNwF-L9IrKfhgpAfv-20pn5NC72ByHJS-b17sGCNrkV3vTDkiVGV98aGbwn32IKXhx97d0X-KHeg" },
-                { name: "arcsann6767", type: "Opener", token: "1//0gbQkQjqB6dmFCgYIARAAGBASNwF-L9IroUxKSF0oSj2t_9L9l7Bk7inNEepzhDA-DLrpVngouFHoyGl__nEp3OD-2SlbxAofEdM" },
-                { name: "k97946781", type: "Opener", token: "1//0g2yeODI8PUEQCgYIARAAGBASNwF-L9IrtxealwGHzy6g1O6Q5aDBoufFtunoe1PM5PAmQrCbOskO-cBvVW-hGJNqKQw6VhxpmDQ" },
-                { name: "kartikag8429", type: "Opener", token: "1//0g0j86Rcxi3QrCgYIARAAGBASNwF-L9Ir-y6PjI7Qr4d5iBkYbc-Tx_ZBQqBUGvnNS0O35qva682RqRzrEP0oQ93rpofm2PzFS6k" },
-                { name: "agkartikag90", type: "Opener", token: "1//0g1w2jQ29C6fkCgYIARAAGBASNwF-L9Ir1mkqwDP8wVSBC5KaKgh12Z2Myzv46aE2vPX0kJkxrOEo7t_NxyhEXSbp7RQBMsF0a9U" },
-                { name: "muskansharma90", type: "Opener", token: "1//0g023PJ2GWaKiCgYIARAAGBASNwF-L9Ir2KCnrDsb90KBj1YyGKYxOc5bx9EU2BIldR7KTrktIj4w6htW3kPDjSkP-0i2jKZyeYo" },
-                { name: "ashwinaryaop", type: "Non-Opener", token: "1//0gVEsWZHhysDiCgYIARAAGBASNwF-L9Ir1VA8Wq2OqrP4NB6DBnNAM64bLqlW05jn1p9BXNcgLg6On-w_wa8AS4nVi3P6kaWAYMI" },
-                { name: "ashwinaryanono", type: "Non-Opener", token: "1//0gl06ju2Mpv_UCgYIARAAGBASNwF-L9IrE1u7ohq49G77gxforJWrE25LFW0l9mhJG77uIePV9d76iSKGXi_zDDxMPukjlM-vPxM" },
-                { name: "ashwinnewnononpppp", type: "Non-Opener", token: "1//0g0wWqj5ZAgPrCgYIARAAGBASNwF-L9IrSKEzgXu0cAT_3AiFgZaFIvc4JlG6fs6IMVD30O9yteGd5rd53Slq-uWVFozpENTurPI" },
-                { name: "satyam414424", type: "Non-Opener", token: "1//0gumKB5PJdWMECgYIARAAGBASNwF-L9IrMUECWwvnDe-zMU4Y6-zLFZPQx3LGZNMCE-6sJ2qzwLa6ZBR9T0L3nw8p__rwRYUPiVM" },
-                { name: "olivia", type: "Opener", token: "1//0gN1QEaHeh1ftCgYIARAAGBASNwF-L9IrDr6iUjVkZxm93EgL8anRXXirumAMygn4sbY28YV8FdxACfH0hL22x2RD3VbJnFV4nHw" },
-                { name: "andrew", type: "Opener", token: "1//0gz3OXIZ57pBpCgYIARAAGBASNwF-L9IrVDCYwyrQxexuHoxTIQ8h6pJ3fPaZrYeEUnMSKeeDoDma6iBDegNkcI2rql1x_-wU8wE" }
+                { name: "ashwinliveseedforall", token: "1//0gub_tDUPkLESCgYIARAAGBASNwF-L9IrVdFJ0uMmaXYM4AG01a6r7Zpo3uDchB7DNXW0Rkt4oDojH3-9HCrZX5tr8uDFmABRRY0" },
+                { name: "asharyaliveseedacc", token: "1//0guqANvb_X5K3CgYIARAAGBASNwF-L9IrqODXDbSdAtPz7GznJrXl0HXkUbcKQ9yqWwda563DfGtAbc8MlFkDZuja-SzHMG7WkXk" },
+                { name: "liveseedsformm", token: "1//0gj4AZbhLjWK0CgYIARAAGBASNwF-L9IrKfhgpAfv-20pn5NC72ByHJS-b17sGCNrkV3vTDkiVGV98aGbwn32IKXhx97d0X-KHeg" },
+                { name: "arcsann6767", token: "1//0gbQkQjqB6dmFCgYIARAAGBASNwF-L9IroUxKSF0oSj2t_9L9l7Bk7inNEepzhDA-DLrpVngouFHoyGl__nEp3OD-2SlbxAofEdM" },
+                { name: "k97946781", token: "1//0g2yeODI8PUEQCgYIARAAGBASNwF-L9IrtxealwGHzy6g1O6Q5aDBoufFtunoe1PM5PAmQrCbOskO-cBvVW-hGJNqKQw6VhxpmDQ" },
+                { name: "kartikag8429", token: "1//0g0j86Rcxi3QrCgYIARAAGBASNwF-L9Ir-y6PjI7Qr4d5iBkYbc-Tx_ZBQqBUGvnNS0O35qva682RqRzrEP0oQ93rpofm2PzFS6k" },
+                { name: "agkartikag90", token: "1//0g1w2jQ29C6fkCgYIARAAGBASNwF-L9Ir1mkqwDP8wVSBC5KaKgh12Z2Myzv46aE2vPX0kJkxrOEo7t_NxyhEXSbp7RQBMsF0a9U" },
+                { name: "muskansharma90", token: "1//0g023PJ2GWaKiCgYIARAAGBASNwF-L9Ir2KCnrDsb90KBj1YyGKYxOc5bx9EU2BIldR7KTrktIj4w6htW3kPDjSkP-0i2jKZyeYo" },
+                { name: "ashwinaryaop", token: "1//0gVEsWZHhysDiCgYIARAAGBASNwF-L9Ir1VA8Wq2OqrP4NB6DBnNAM64bLqlW05jn1p9BXNcgLg6On-w_wa8AS4nVi3P6kaWAYMI" },
+                { name: "ashwinaryanono", token: "1//0gl06ju2Mpv_UCgYIARAAGBASNwF-L9IrE1u7ohq49G77gxforJWrE25LFW0l9mhJG77uIePV9d76iSKGXi_zDDxMPukjlM-vPxM" },
+                { name: "ashwinnewnononpppp", token: "1//0g0wWqj5ZAgPrCgYIARAAGBASNwF-L9IrSKEzgXu0cAT_3AiFgZaFIvc4JlG6fs6IMVD30O9yteGd5rd53Slq-uWVFozpENTurPI" },
+                { name: "satyam414424", token: "1//0gumKB5PJdWMECgYIARAAGBASNwF-L9IrMUECWwvnDe-zMU4Y6-zLFZPQx3LGZNMCE-6sJ2qzwLa6ZBR9T0L3nw8p__rwRYUPiVM" }
+                  { name: "andrew.smith", token: "1//0gz3OXIZ57pBpCgYIARAAGBASNwF-L9IrVDCYwyrQxexuHoxTIQ8h6pJ3fPaZrYeEUnMSKeeDoDma6iBDegNkcI2rql1x_-wU8wE" }
+          { name: "olivia92", token: "1//0gN1QEaHeh1ftCgYIARAAGBASNwF-L9IrDr6iUjVkZxm93EgL8anRXXirumAMygn4sbY28YV8FdxACfH0hL22x2RD3VbJnFV4nHw" }
             ]
         };
 
-        const successAudio = new Audio('ad.mp3');
-        let audioPlayAllowed = false;
-        let isAudioPlayingTriggered = false;
+        const AudioEngine = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playSuccess() {
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+                    const osc1 = this.ctx.createOscillator();
+                    const osc2 = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
 
-        window.addEventListener('click', () => {
-            if (!audioPlayAllowed) {
-                successAudio.play().then(() => {
-                    successAudio.pause();
-                    successAudio.currentTime = 0;
-                    audioPlayAllowed = true;
-                    const audBanner = document.getElementById('audio-toast');
-                    if (audBanner) {
-                        audBanner.style.opacity = '0';
-                        setTimeout(() => audBanner.remove(), 300);
-                    }
-                }).catch(() => {});
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(587.33, now); 
+                    osc1.frequency.exponentialRampToValueAtTime(880, now + 0.15); 
+
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(293.66, now);
+                    osc2.frequency.exponentialRampToValueAtTime(440, now + 0.15);
+
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.25);
+                    osc2.stop(now + 0.25);
+                } catch(e) { console.warn('Audio blocked or unavailable', e); }
             }
-        }, { once: true });
-
-        const dom = {
-            input: document.getElementById('domain-input'),
-            btnCheckInbox: document.getElementById('btn-check-inbox'),
-            btnCheckSpam: document.getElementById('btn-check-spam'),
-            btnClear: document.getElementById('btn-clear'),
-            table: document.getElementById('results-table-container'),
-            body: document.getElementById('results-body'),
-            empty: document.getElementById('empty-state'),
-            progress: document.getElementById('scan-progress'),
-            modeBadge: document.getElementById('active-mode-badge'),
-            feedStatus: document.getElementById('feed-status-summary'),
-            
-            commonSec: document.getElementById('common-section'),
-            commonInput: document.getElementById('common-subject-input'),
-            copy: document.getElementById('copy-btn'),
-            percent: document.getElementById('match-percent'),
-            matchBar: document.getElementById('match-bar'),
-
-            inboxSummaryContainer: document.getElementById('inbox-subjects-summary-container'),
-            inboxSubjectsList: document.getElementById('inbox-subjects-list'),
-            inboxSubjectsCount: document.getElementById('inbox-subjects-count'),
-
-            previewTrigger: document.getElementById('preview-trigger-container'),
-            previewTriggerTitle: document.getElementById('preview-trigger-title'),
-            previewTriggerDesc: document.getElementById('preview-trigger-desc'),
-            showPreviewBtn: document.getElementById('show-preview-btn'),
-            previewModal: document.getElementById('preview-modal'),
-            closeModalBtn: document.getElementById('close-modal-btn'),
-            modalSubject: document.getElementById('modal-subject'),
-            modalAccount: document.getElementById('modal-account'),
-            modalTime: document.getElementById('modal-time'),
-            modalSecondsAgo: document.getElementById('modal-seconds-ago'),
-            modalBodyFrame: document.getElementById('modal-body-frame'),
-            modalBodyFallback: document.getElementById('modal-body-fallback'),
-
-            toast: document.getElementById('toast-notification'),
-            toastTitle: document.getElementById('toast-title'),
-            toastMessage: document.getElementById('toast-message')
         };
 
-        let lastScanResults = [];
+        // Application State
+        let showSpamInTable = false;
+        let globalExtractedData = [];
+        let previewTargetEmail = null;
 
-        document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Nodes`;
-        document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
+        // Dynamic Elements Counter
+        document.getElementById('sidebar-accounts-count').innerText = `${CONFIG.accounts.length} Loaded`;
+        document.getElementById('header-accounts-count').innerText = CONFIG.accounts.length;
 
-        async function getAccess(refreshToken) {
-            try {
-                const res = await fetch('https://oauth2.googleapis.com/token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        client_id: CONFIG.clientId,
-                        client_secret: CONFIG.clientSecret,
-                        refresh_token: refreshToken,
-                        grant_type: 'refresh_token',
-                    }),
-                });
-                const data = await res.json();
-                if (data.error) return null;
-                return data.access_token;
-            } catch (e) {
-                return null;
-            }
-        }
+        // Event Listeners Setup
+        document.getElementById('sync-inbox-btn').addEventListener('click', () => runSyncPipeline('INBOX'));
+        document.getElementById('sync-spam-btn').addEventListener('click', () => runSyncPipeline('SPAM'));
+        document.getElementById('clear-btn').addEventListener('click', resetTableAndState);
+        document.getElementById('copy-btn').addEventListener('click', copyCommonSubject);
+        document.getElementById('toggle-spam-btn').addEventListener('click', toggleSpamVisibility);
+        document.getElementById('show-preview-btn').addEventListener('click', openModalWithPreview);
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
 
-        function decodeBase64(data) {
-            try {
-                const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
-                return decodeURIComponent(escape(window.atob(base64)));
-            } catch (e) {
-                try {
-                    return window.atob(data.replace(/-/g, '+').replace(/_/g, '/'));
-                } catch (err) {
-                    return "";
-                }
-            }
-        }
+        // OAuth Token Access Caching
+        const tokenCache = {};
 
-        function extractGmailBody(payload) {
-            if (!payload) return "";
-            if (payload.body && payload.body.data) {
-                return decodeBase64(payload.body.data);
-            }
-            if (payload.parts) {
-                let htmlPart = payload.parts.find(p => p.mimeType === 'text/html');
-                if (htmlPart && htmlPart.body && htmlPart.body.data) {
-                    return decodeBase64(htmlPart.body.data);
-                }
-                let plainPart = payload.parts.find(p => p.mimeType === 'text/plain');
-                if (plainPart && plainPart.body && plainPart.body.data) {
-                    return decodeBase64(plainPart.body.data);
-                }
-                for (let part of payload.parts) {
-                    let recursiveResult = extractGmailBody(part);
-                    if (recursiveResult) return recursiveResult;
-                }
-            }
-            return "";
-        }
-
-        async function fetchSubjects(accessToken, domain, mode) {
-            if (!accessToken) return null;
-            try {
-                const folderQuery = mode === 'inbox' ? 'in:inbox' : 'in:spam';
-                const q = encodeURIComponent(`${domain} ${folderQuery}`);
-                
-                const listRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=3`, {
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                });
-                const listData = await listRes.json();
-
-                if (!listData.messages || listData.messages.length === 0) return [];
-
-                const now = Date.now();
-
-                return await Promise.all(listData.messages.map(async (m) => {
-                    const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}`, {
-                        headers: { Authorization: `Bearer ${accessToken}` }
-                    });
-                    const msgData = await msgRes.json();
-                    
-                    const headers = msgData.payload.headers;
-                    const subject = headers.find(h => h.name === 'Subject')?.value || "(Empty Subject)";
-                    
-                    const dateRaw = headers.find(h => h.name === 'Date')?.value || "";
-                    const dateObj = new Date(dateRaw);
-                    const timeValid = !isNaN(dateObj.getTime());
-                    
-                    let secondsAgo = 0;
-                    if (timeValid) {
-                        secondsAgo = Math.max(0, Math.floor((now - dateObj.getTime()) / 1000));
-                    }
-
-                    const dateStr = !timeValid ? "N/A" : dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                    const timeStr = !timeValid ? "N/A" : dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-
-                    const snippet = msgData.snippet || "";
-                    let parsedBody = "";
-                    try {
-                        parsedBody = extractGmailBody(msgData.payload);
-                    } catch (bodyError) {
-                        parsedBody = snippet;
-                    }
-
-                    const labels = msgData.labelIds || [];
-                    let landing = 'OTHER';
-                    if (labels.includes('SPAM')) {
-                        landing = 'SPAM';
-                    } else if (labels.includes('INBOX')) {
-                        if (labels.includes('CATEGORY_PROMOTIONS')) landing = 'PROMOTIONS';
-                        else if (labels.includes('CATEGORY_SOCIAL')) landing = 'SOCIAL';
-                        else if (labels.includes('CATEGORY_UPDATES')) landing = 'UPDATES';
-                        else if (labels.includes('CATEGORY_FORUMS')) landing = 'FORUMS';
-                        else landing = 'PRIMARY';
-                    }
-
-                    return { 
-                        subject, 
-                        dateStr, 
-                        timeStr, 
-                        secondsAgo, 
-                        landing, 
-                        snippet, 
-                        body: parsedBody || snippet 
-                    };
-                }));
-            } catch (e) { 
-                return null; 
-            }
-        }
-
-        function renderRow(accConfig, domain, subjects, mode) {
-            const row = document.createElement('tr');
-            row.className = "hover:bg-slate-50 transition-colors animate-fade-in flex flex-col sm:table-row border-b sm:border-b-0 border-slate-200 pb-4 sm:pb-0 mb-4 sm:mb-0";
-            
-            const accName = accConfig.name;
-            const isOpener = accConfig.type === "Opener";
-            const isMuskan = (accName === 'muskansharma90' || accName === 'musk9090');
-
-            const typeBadgeHtml = isOpener 
-                ? `<span class="inline-flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-semibold mt-0.5"><i class="fa-solid fa-envelope-open text-[8px]"></i> Opener</span>`
-                : `<span class="inline-flex items-center gap-1 text-[10px] bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded font-semibold mt-0.5"><i class="fa-solid fa-lock text-[8px]"></i> Non-Opener</span>`;
-
-            const accountLabel = isMuskan 
-                ? `<div class="flex flex-col">
-                    <div class="flex items-center gap-2 font-bold text-slate-900">
-                      <span class="w-2 h-2 rounded-full bg-indigo-600"></span>${accName}
-                      <span class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono">TARGET NODE</span>
-                    </div>
-                    <div class="mt-0.5">${typeBadgeHtml}</div>
-                   </div>` 
-                : `<div class="flex flex-col">
-                    <div class="font-semibold text-slate-800">${accName}</div>
-                    <div class="mt-0.5">${typeBadgeHtml}</div>
-                   </div>`;
-
-            const hasData = subjects && subjects.length > 0;
-            const statusHtml = hasData 
-                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> MATCHED (${subjects.length})
-                   </span>`
-                : subjects === null 
-                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                     AUTH ERROR
-                   </span>`
-                : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
-                     NO MAIL
-                   </span>`;
-
-            let subjectsHtml = '';
-            if (subjects === null) {
-                subjectsHtml = `<div class="text-rose-600 text-xs font-medium">Authentication token expired or invalid for account: ${accName}</div>`;
-            } else if (subjects.length === 0) {
-                subjectsHtml = `<div class="text-slate-400 text-xs italic">No messages found matching mode [${mode.toUpperCase()}] for target domain</div>`;
-            } else {
-                subjectsHtml = subjects.map((s, i) => {
-                    let badgeStyle = "bg-slate-100 text-slate-700 border-slate-200";
-                    let folderIcon = "fa-folder";
-
-                    if (s.landing === 'PRIMARY') {
-                        badgeStyle = "bg-emerald-50 text-emerald-700 border-emerald-200";
-                        folderIcon = "fa-inbox";
-                    } else if (s.landing === 'SPAM') {
-                        badgeStyle = "bg-rose-50 text-rose-700 border-rose-200";
-                        folderIcon = "fa-triangle-exclamation";
-                    } else if (s.landing === 'PROMOTIONS') {
-                        badgeStyle = "bg-amber-50 text-amber-800 border-amber-200";
-                        folderIcon = "fa-tags";
-                    } else if (s.landing === 'SOCIAL') {
-                        badgeStyle = "bg-sky-50 text-sky-700 border-sky-200";
-                        folderIcon = "fa-users";
-                    } else if (s.landing === 'UPDATES') {
-                        badgeStyle = "bg-purple-50 text-purple-700 border-purple-200";
-                        folderIcon = "fa-bell";
-                    } else if (s.landing === 'FORUMS') {
-                        badgeStyle = "bg-teal-50 text-teal-700 border-teal-200";
-                        folderIcon = "fa-comments";
-                    }
-
-                    return `
-                        <div class="mb-2.5 last:mb-0 p-2.5 sm:p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
-                                <div class="font-bold text-slate-900 flex items-start gap-2 min-w-0 flex-1">
-                                    <span class="w-4 h-4 rounded bg-slate-200 text-slate-700 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">${i+1}</span>
-                                    <span class="break-words line-clamp-2 sm:line-clamp-1 flex-1 leading-snug">${escapeHtml(s.subject)}</span>
-                                </div>
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${badgeStyle} shrink-0 self-start sm:self-auto">
-                                    <i class="fa-solid ${folderIcon} text-[9px]"></i> ${s.landing}
-                                </span>
-                            </div>
-                            
-                            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-slate-500 font-mono mt-1 pt-1.5 border-t border-slate-200/60">
-                                <div>
-                                    <span class="text-slate-400">Delivered:</span> 
-                                    <strong class="text-indigo-600 font-bold">${s.secondsAgo.toLocaleString()} seconds ago</strong>
-                                </div>
-                                <div class="text-slate-300 hidden sm:block">•</div>
-                                <div class="text-slate-500">${s.dateStr} @ ${s.timeStr}</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+        async function getAccessToken(account) {
+            if (tokenCache[account.name] && tokenCache[account.name].expires > Date.now()) {
+                return tokenCache[account.name].token;
             }
 
-            row.innerHTML = `
-                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top block sm:table-cell">
-                    <div class="flex items-center justify-between sm:block mb-1 sm:mb-0">
-                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Node</span>
-                        ${accountLabel}
-                    </div>
-                </td>
-                <td class="px-4 sm:px-6 py-1 sm:py-4 align-top block sm:table-cell">
-                    <div class="flex items-center justify-between sm:block mb-2 sm:mb-0">
-                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Domain</span>
-                        <span class="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200 truncate max-w-[200px] inline-block">${escapeHtml(domain)}</span>
-                    </div>
-                </td>
-                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top block sm:table-cell">${subjectsHtml}</td>
-                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top text-left sm:text-right block sm:table-cell">
-                    <div class="flex items-center justify-between sm:justify-end sm:block">
-                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Status</span>
-                        ${statusHtml}
-                    </div>
-                </td>
-            `;
-            dom.body.appendChild(row);
+            const response = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    client_id: CONFIG.clientId,
+                    client_secret: CONFIG.clientSecret,
+                    refresh_token: account.token,
+                    grant_type: 'refresh_token'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Auth failed for node ${account.name}`);
+            }
+
+            const data = await response.json();
+            tokenCache[account.name] = {
+                token: data.access_token,
+                expires: Date.now() + (data.expires_in - 60) * 1000
+            };
+            return data.access_token;
         }
 
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
+        async function runSyncPipeline(targetFolder) {
+            const rawDomains = document.getElementById('domain-input').value;
+            const domains = rawDomains.split('\n').map(d => d.trim()).filter(Boolean);
 
-        function calculateCommonality(results, mode) {
-            if (results.length === 0) {
-                dom.percent.textContent = "0%";
-                dom.matchBar.style.width = "0%";
-                dom.commonInput.value = `No ${mode.toUpperCase()} messages retrieved from targets.`;
-                dom.previewTrigger.classList.add('hidden');
-                dom.inboxSummaryContainer.classList.add('hidden');
+            if (domains.length === 0) {
+                showToast("Configuration Error", "Please provide at least one target domain to probe.");
                 return;
             }
 
-            const totalAccounts = CONFIG.accounts.length;
+            setSyncState(true);
+            resetTableAndState();
 
-            const accountMaps = results.reduce((acc, curr) => {
-                if (!acc[curr.accName]) acc[curr.accName] = new Set();
-                curr.subjects.forEach(s => {
-                    acc[curr.accName].add(s.subject);
-                });
-                return acc;
-            }, {});
+            let totalSpamCount = 0;
+            let totalEmailsScanned = 0;
+            const subjectCounts = {};
+            let latestTargetMailPayload = null;
 
-            const allSubjects = [].concat(...Object.values(accountMaps).map(set => Array.from(set)));
-            const frequency = {};
-            allSubjects.forEach(s => frequency[s] = (frequency[s] || 0) + 1);
+            for (const account of CONFIG.accounts) {
+                try {
+                    const accessToken = await getAccessToken(account);
+                    const query = domains.map(d => `from:${d}`).join(' OR ');
+                    const fullQuery = targetFolder === 'SPAM' ? `in:spam (${query})` : `in:inbox (${query})`;
 
+                    const searchRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(fullQuery)}&maxResults=3`, {
+                        headers: { Authorization: `Bearer ${accessToken}` }
+                    });
+
+                    if (!searchRes.ok) throw new Error('Search failed');
+
+                    const searchData = await searchRes.json();
+                    const messages = searchData.messages || [];
+
+                    const extractedSubjects = [];
+
+                    for (const msg of messages) {
+                        const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
+                            headers: { Authorization: `Bearer ${accessToken}` }
+                        });
+                        if (!msgRes.ok) continue;
+
+                        const msgData = await msgRes.json();
+                        const headers = msgData.payload.headers || [];
+                        const subjectHeader = headers.find(h => h.name.toLowerCase() === 'subject');
+                        const subjectVal = subjectHeader ? subjectHeader.value : '(No Subject)';
+                        const isSpam = msgData.labelIds && msgData.labelIds.includes('SPAM');
+
+                        if (isSpam) totalSpamCount++;
+                        totalEmailsScanned++;
+
+                        extractedSubjects.push({ subject: subjectVal, isSpam, rawMsg: msgData });
+
+                        subjectCounts[subjectVal] = (subjectCounts[subjectVal] || 0) + 1;
+
+                        if (account.name.includes("musk") || !latestTargetMailPayload) {
+                            latestTargetMailPayload = {
+                                accountName: account.name,
+                                subject: subjectVal,
+                                rawMsg: msgData,
+                                time: new Date().toLocaleTimeString()
+                            };
+                        }
+                    }
+
+                    renderRow(account.name, domains.join(', '), extractedSubjects, true);
+
+                } catch (err) {
+                    console.error(`Error processing ${account.name}:`, err);
+                    renderRow(account.name, domains.join(', '), [], false);
+                    if (account.name.includes("musk")) {
+                        showToast("Muskan Asset Node Disconnect", `The ${account.name} pipeline returned void inside this active scope.`);
+                    }
+                }
+            }
+
+            evaluateConvergenceStats(subjectCounts, totalEmailsScanned, latestTargetMailPayload);
+            updateSpamCounter(totalSpamCount);
+            setSyncState(false);
+            AudioEngine.playSuccess();
+        }
+
+        function renderRow(accountName, domainStr, subjects, isSuccess) {
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('results-table-container').classList.remove('hidden');
+            document.getElementById('clear-btn').classList.remove('hidden');
+
+            const tbody = document.getElementById('results-body');
+            const row = document.createElement('tr');
+            row.className = "hover:bg-emerald-50/30 transition-colors";
+
+            let subjectListHtml = '';
+
+            if (!isSuccess) {
+                subjectListHtml = `<span class="text-xs font-bold text-red-500"><i class="fa-solid fa-circle-exclamation mr-1"></i> Authentication or Connection Failed</span>`;
+            } else if (subjects.length === 0) {
+                subjectListHtml = `<span class="text-xs italic text-gray-400">No messages found for criteria</span>`;
+            } else {
+                subjectListHtml = `<div class="flex flex-col gap-1.5">` + 
+                    subjects.map(s => {
+                        const spamBadge = s.isSpam ? `<span class="text-[9px] bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded font-black uppercase">Spam</span>` : `<span class="text-[9px] bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded font-black uppercase">Inbox</span>`;
+                        const displayClass = s.isSpam ? 'spam-item hidden' : 'inbox-item';
+                        return `<div class="${displayClass} flex items-center gap-2 text-xs font-bold text-black bg-white p-2 rounded-xl border border-emerald-100 shadow-sm">
+                            ${spamBadge}
+                            <span class="truncate max-w-xs md:max-w-md">${escapeHtml(s.subject)}</span>
+                        </div>`;
+                    }).join('') + `</div>`;
+            }
+
+            const statusBadge = isSuccess 
+                ? `<span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> ACTIVE</span>`
+                : `<span class="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold"><span class="w-2 h-2 rounded-full bg-red-500"></span> OFFLINE</span>`;
+
+            row.innerHTML = `
+                <td class="px-8 py-5 font-bold text-sm text-black flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-black text-xs header-font">
+                        ${accountName.substring(0,2).toUpperCase()}
+                    </div>
+                    ${accountName}
+                </td>
+                <td class="px-8 py-5 font-mono text-xs text-emerald-900 font-semibold">${escapeHtml(domainStr)}</td>
+                <td class="px-8 py-5">${subjectListHtml}</td>
+                <td class="px-8 py-5 text-right">${statusBadge}</td>
+            `;
+
+            tbody.appendChild(row);
+            applySpamFilterToDOM();
+        }
+
+        function evaluateConvergenceStats(subjectCounts, totalScanned, targetMailPayload) {
+            document.getElementById('common-section').classList.remove('hidden');
+
+            let maxCount = 0;
             let topSubject = "";
-            let topCount = 0;
-            for (const [subj, count] of Object.entries(frequency)) {
-                if (count > topCount) {
-                    topCount = count;
+
+            for (const [subj, count] of Object.entries(subjectCounts)) {
+                if (count > maxCount) {
+                    maxCount = count;
                     topSubject = subj;
                 }
             }
 
-            const matchRate = Math.round((topCount / totalAccounts) * 100);
-            dom.percent.textContent = `${matchRate}%`;
-            dom.matchBar.style.width = `${matchRate}%`;
+            const subjectInput = document.getElementById('common-subject-input');
+            const matchBar = document.getElementById('match-bar');
+            const matchPercent = document.getElementById('match-percent');
+            const gifNeg = document.getElementById('panda-gif-negative');
+            const gifPos = document.getElementById('panda-gif-positive');
 
-            if (topCount > 0) {
-                dom.commonInput.value = topSubject;
-                if (topCount === totalAccounts && !isAudioPlayingTriggered) {
-                    successAudio.play().then(() => {
-                        isAudioPlayingTriggered = true;
-                    }).catch(() => {});
-                }
-            } else {
-                dom.commonInput.value = `No common subjects detected in ${mode.toUpperCase()}.`;
-            }
+            if (totalScanned > 0 && topSubject) {
+                const percentage = Math.round((maxCount / totalScanned) * 100);
+                subjectInput.value = topSubject;
+                matchBar.style.width = `${percentage}%`;
+                matchPercent.innerText = `${percentage}%`;
 
-            // Group subjects and derive percentage match breakdown
-            const inboxAccountMaps = results.reduce((acc, curr) => {
-                if (!acc[curr.accName]) acc[curr.accName] = new Set();
-                curr.subjects.forEach(s => {
-                    acc[curr.accName].add(s.subject);
-                });
-                return acc;
-            }, {});
-
-            const inboxSubjectsList = [].concat(...Object.values(inboxAccountMaps).map(set => Array.from(set)));
-            const inboxFrequency = {};
-            inboxSubjectsList.forEach(s => inboxFrequency[s] = (inboxFrequency[s] || 0) + 1);
-
-            const sortedInboxSubjects = Object.entries(inboxFrequency)
-                .map(([subject, count]) => ({
-                    subject,
-                    count,
-                    percentage: Math.round((count / totalAccounts) * 100)
-                }))
-                .sort((a, b) => b.count - a.count);
-
-            if (sortedInboxSubjects.length > 0) {
-                dom.inboxSummaryContainer.classList.remove('hidden');
-                dom.inboxSubjectsCount.textContent = `${sortedInboxSubjects.length} Unique subject${sortedInboxSubjects.length > 1 ? 's' : ''}`;
-                
-                dom.inboxSubjectsList.innerHTML = sortedInboxSubjects.map((item, index) => {
-                    return `
-                        <div class="p-3 flex items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
-                            <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-mono font-bold text-[10px] flex items-center justify-center shrink-0">${index + 1}</span>
-                                <span class="font-semibold text-slate-800 text-xs sm:text-sm truncate" title="${escapeHtml(item.subject)}">${escapeHtml(item.subject)}</span>
-                            </div>
-                            <div class="flex items-center gap-3 shrink-0 font-mono text-xs">
-                                <span class="text-slate-400 hidden sm:inline text-[11px]">${item.count} / ${totalAccounts} nodes</span>
-                                <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs">${item.percentage}%</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } else {
-                dom.inboxSummaryContainer.classList.add('hidden');
-            }
-
-            const muskanResult = results.find(item => item.accName === "muskansharma90" || item.accName === "musk9090");
-            const hasMuskanMails = muskanResult && muskanResult.subjects && muskanResult.subjects.length > 0;
-
-            if (hasMuskanMails) {
-                dom.previewTrigger.classList.remove('hidden');
-                dom.previewTriggerTitle.textContent = `Mail Detected in Muskan's Account (${mode.toUpperCase()})`;
-                dom.previewTriggerDesc.innerHTML = `Active ${mode.toUpperCase()} payload verified. Click button to inspect HTML structure safely.`;
-            } else {
-                dom.previewTrigger.classList.add('hidden');
-            }
-        }
-
-        async function runScanSequence(mode) {
-            const domains = dom.input.value.split('\n').map(d => d.trim()).filter(d => d.length > 0);
-            if (domains.length === 0) {
-                showToast("Missing Target Domain", "Please enter at least one target domain to check.");
-                return;
-            }
-
-            isAudioPlayingTriggered = false;
-            setScanUIState(true, mode);
-
-            dom.empty.classList.add('hidden');
-            dom.table.classList.remove('hidden');
-            dom.commonSec.classList.remove('hidden');
-            dom.previewTrigger.classList.add('hidden');
-            dom.inboxSummaryContainer.classList.add('hidden');
-            dom.body.innerHTML = '';
-            lastScanResults = [];
-
-            const totalScans = domains.length * CONFIG.accounts.length;
-            let completedScans = 0;
-
-            for (const domain of domains) {
-                await Promise.all(CONFIG.accounts.map(async (acc) => {
-                    try {
-                        const token = await getAccess(acc.token);
-                        const subjects = await fetchSubjects(token, domain, mode);
-                        
-                        renderRow(acc, domain, subjects, mode);
-                        if (subjects && subjects.length > 0) {
-                            lastScanResults.push({ accName: acc.name, subjects });
-                        }
-                    } catch (e) {
-                        renderRow(acc, domain, null, mode);
-                    } finally {
-                        completedScans++;
-                        dom.feedStatus.textContent = `Scanned ${completedScans} of ${totalScans} node sequences...`;
-                    }
-                }));
-            }
-
-            calculateCommonality(lastScanResults, mode);
-            setScanUIState(false, mode);
-            dom.feedStatus.textContent = `Completed scan in [${mode.toUpperCase()}] mode at ${new Date().toLocaleTimeString()}`;
-        }
-
-        function setScanUIState(isScanning, mode) {
-            dom.btnCheckInbox.disabled = isScanning;
-            dom.btnCheckSpam.disabled = isScanning;
-            
-            if (isScanning) {
-                dom.progress.classList.remove('hidden');
-                dom.modeBadge.className = "self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold flex items-center gap-2 animate-pulse";
-                dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-indigo-600"></span> Scanning [${mode.toUpperCase()}]...`;
-            } else {
-                dom.progress.classList.add('hidden');
-                const badgeColor = mode === 'inbox' ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-800';
-                dom.modeBadge.className = `self-start sm:self-auto px-3.5 py-1.5 rounded-full ${badgeColor} border border-slate-200 text-xs font-bold flex items-center gap-2`;
-                dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full ${mode === 'inbox' ? 'bg-indigo-600' : 'bg-amber-600'}"></span> Active Mode: ${mode.toUpperCase()}`;
-            }
-        }
-
-        // Attach listeners safely
-        dom.btnCheckInbox.addEventListener('click', () => runScanSequence('inbox'));
-        dom.btnCheckSpam.addEventListener('click', () => runScanSequence('spam'));
-
-        dom.btnClear.addEventListener('click', () => {
-            dom.input.value = '';
-            dom.body.innerHTML = '';
-            dom.table.classList.add('hidden');
-            dom.empty.classList.remove('hidden');
-            dom.commonSec.classList.add('hidden');
-            dom.previewTrigger.classList.add('hidden');
-            dom.inboxSummaryContainer.classList.add('hidden');
-            dom.feedStatus.textContent = "Awaiting scan initiation";
-            dom.modeBadge.className = "self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2";
-            dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Idle / Ready`;
-            lastScanResults = [];
-        });
-
-        dom.copy.addEventListener('click', () => {
-            const val = dom.commonInput.value;
-            if (val && !val.includes('No common') && !val.includes('Scanning')) {
-                navigator.clipboard.writeText(val).then(() => {
-                    const origIcon = dom.copy.innerHTML;
-                    dom.copy.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i>`;
-                    setTimeout(() => { dom.copy.innerHTML = origIcon; }, 1800);
-                }).catch(() => {
-                    const el = document.createElement("textarea");
-                    el.value = val;
-                    document.body.appendChild(el);
-                    el.select();
-                    document.execCommand("copy");
-                    document.body.removeChild(el);
-                });
-            }
-        });
-
-        dom.showPreviewBtn.addEventListener('click', () => {
-            const muskanResult = lastScanResults.find(item => item.accName === 'muskansharma90' || item.accName === 'musk9090');
-            if (!muskanResult || !muskanResult.subjects || muskanResult.subjects.length === 0) {
-                showToast("Preview Unavailable", "No subject data retrieved for target node.");
-                return;
-            }
-
-            const activeSubject = dom.commonInput.value;
-            let targetMail = muskanResult.subjects.find(s => s.subject === activeSubject);
-            if (!targetMail) targetMail = muskanResult.subjects[0];
-
-            if (targetMail) {
-                dom.modalSubject.textContent = targetMail.subject;
-                dom.modalAccount.textContent = `${muskanResult.accName} (Muskan Sharma)`;
-                dom.modalTime.textContent = `${targetMail.dateStr} @ ${targetMail.timeStr}`;
-                dom.modalSecondsAgo.textContent = `${targetMail.secondsAgo.toLocaleString()} seconds ago`;
-
-                if (targetMail.body && targetMail.body.includes('<')) {
-                    dom.modalBodyFallback.classList.add('hidden');
-                    dom.modalBodyFrame.classList.remove('hidden');
-
-                    const safeCSS = `
-                        <style>
-                            a, a *, [href], button, input {
-                                pointer-events: none !important;
-                                cursor: default !important;
-                                text-decoration: none !important;
-                            }
-                        </style>
-                    `;
-                    dom.modalBodyFrame.srcdoc = safeCSS + targetMail.body;
+                if (percentage >= 50) {
+                    gifNeg.classList.add('hidden');
+                    gifPos.classList.remove('hidden');
                 } else {
-                    dom.modalBodyFrame.classList.add('hidden');
-                    dom.modalBodyFallback.classList.remove('hidden');
-                    dom.modalBodyFallback.textContent = targetMail.body || targetMail.snippet || "No body content parsed.";
+                    gifPos.classList.add('hidden');
+                    gifNeg.classList.remove('hidden');
                 }
-
-                dom.previewModal.classList.remove('hidden');
-                setTimeout(() => {
-                    dom.previewModal.classList.remove('opacity-0');
-                }, 20);
+            } else {
+                subjectInput.value = "No subjects extracted across specified scope.";
+                matchBar.style.width = `0%`;
+                matchPercent.innerText = `0%`;
+                gifPos.classList.add('hidden');
+                gifNeg.classList.remove('hidden');
             }
-        });
 
-        const hidePreviewModal = () => {
-            dom.previewModal.classList.add('opacity-0');
+            if (targetMailPayload) {
+                previewTargetEmail = targetMailPayload;
+                const container = document.getElementById('preview-trigger-container');
+                container.classList.remove('hidden');
+                document.getElementById('preview-trigger-desc').innerHTML = `Payload layout extracted safely from <strong class="text-emerald-700 font-bold">${targetMailPayload.accountName}</strong>.`;
+            }
+        }
+
+        function openModalWithPreview() {
+            if (!previewTargetEmail) return;
+
+            const modal = document.getElementById('preview-modal');
+            const modalSubj = document.getElementById('modal-subject');
+            const modalAcc = document.getElementById('modal-account');
+            const modalTime = document.getElementById('modal-time');
+            const fallbackBody = document.getElementById('modal-body-fallback');
+            const iframe = document.getElementById('modal-body-frame');
+
+            modalSubj.innerText = previewTargetEmail.subject;
+            modalAcc.innerText = previewTargetEmail.accountName;
+            modalTime.innerText = previewTargetEmail.time;
+
+            const htmlBody = getMessageBody(previewTargetEmail.rawMsg);
+
+            if (htmlBody) {
+                iframe.classList.remove('hidden');
+                fallbackBody.classList.add('hidden');
+                iframe.srcdoc = htmlBody;
+            } else {
+                iframe.classList.add('hidden');
+                fallbackBody.classList.remove('hidden');
+                fallbackBody.innerText = previewTargetEmail.rawMsg.snippet || "No readable content extracted.";
+            }
+
+            modal.classList.remove('hidden');
             setTimeout(() => {
-                dom.previewModal.classList.add('hidden');
-                dom.modalBodyFrame.srcdoc = "";
-            }, 200);
-        };
+                modal.classList.remove('opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+            }, 10);
+        }
 
-        dom.closeModalBtn.addEventListener('click', hidePreviewModal);
-        dom.previewModal.addEventListener('click', (e) => {
-            if (e.target === dom.previewModal) hidePreviewModal();
-        });
-
-        function showToast(title, message) {
-            dom.toastTitle.textContent = title;
-            dom.toastMessage.textContent = message;
-            dom.toast.classList.remove('translate-y-10', 'opacity-0');
+        function closeModal() {
+            const modal = document.getElementById('preview-modal');
+            modal.classList.add('opacity-0');
+            modal.firstElementChild.classList.add('scale-95');
             setTimeout(() => {
-                dom.toast.classList.add('translate-y-10', 'opacity-0');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function getMessageBody(rawMsg) {
+            const payload = rawMsg.payload;
+            if (!payload) return null;
+
+            if (payload.body && payload.body.data) {
+                return decodeB64(payload.body.data);
+            }
+
+            if (payload.parts) {
+                for (const part of payload.parts) {
+                    if (part.mimeType === 'text/html' && part.body && part.body.data) {
+                        return decodeB64(part.body.data);
+                    }
+                }
+                for (const part of payload.parts) {
+                    if (part.mimeType === 'text/plain' && part.body && part.body.data) {
+                        return `<pre style="white-space: pre-wrap; font-family: sans-serif;">${escapeHtml(decodeB64(part.body.data))}</pre>`;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function decodeB64(str) {
+            try {
+                return decodeURIComponent(escape(atob(str.replace(/-/g, '+').replace(/_/g, '/'))));
+            } catch(e) {
+                return atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+            }
+        }
+
+        function toggleSpamVisibility() {
+            showSpamInTable = !showSpamInTable;
+            const textSpan = document.getElementById('toggle-spam-text');
+            const icon = document.getElementById('toggle-spam-icon');
+
+            if (showSpamInTable) {
+                textSpan.innerText = "Hide Spam Mails";
+                icon.className = "fa-solid fa-eye text-emerald-600";
+            } else {
+                textSpan.innerText = "Show Spam Mails";
+                icon.className = "fa-solid fa-eye-slash text-emerald-600";
+            }
+            applySpamFilterToDOM();
+        }
+
+        function applySpamFilterToDOM() {
+            const spamItems = document.querySelectorAll('.spam-item');
+            spamItems.forEach(el => {
+                if (showSpamInTable) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        function updateSpamCounter(count) {
+            const btn = document.getElementById('toggle-spam-btn');
+            const counter = document.getElementById('spam-counter');
+            counter.innerText = count;
+            if (count > 0) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function setSyncState(isLoading) {
+            const btnInbox = document.getElementById('sync-inbox-btn');
+            const btnSpam = document.getElementById('sync-spam-btn');
+            const scanProgress = document.getElementById('scan-progress');
+
+            btnInbox.disabled = isLoading;
+            btnSpam.disabled = isLoading;
+
+            if (isLoading) {
+                scanProgress.classList.remove('hidden');
+            } else {
+                scanProgress.classList.add('hidden');
+            }
+        }
+
+        function resetTableAndState() {
+            document.getElementById('results-body').innerHTML = '';
+            document.getElementById('results-table-container').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('hidden');
+            document.getElementById('common-section').classList.add('hidden');
+            document.getElementById('preview-trigger-container').classList.add('hidden');
+            document.getElementById('clear-btn').classList.add('hidden');
+            document.getElementById('toggle-spam-btn').classList.add('hidden');
+            previewTargetEmail = null;
+        }
+
+        function copyCommonSubject() {
+            const input = document.getElementById('common-subject-input');
+            if (!input.value) return;
+            navigator.clipboard.writeText(input.value);
+            showToast("Copied to Clipboard", "Subject string is ready for deployment.");
+        }
+
+        function showToast(title, desc) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-desc').innerText = desc;
+
+            toast.classList.remove('translate-y-12', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-12', 'opacity-0');
             }, 4000);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
 </body>
