@@ -187,13 +187,13 @@
                     <div id="inbox-subjects-summary-container" class="hidden border-t border-slate-100 pt-5">
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                                <i class="fa-solid fa-inbox text-indigo-600"></i> Inbox Subject Lines & Match Distribution
+                                <i class="fa-solid fa-inbox text-indigo-600"></i> Subject Lines & Match Distribution
                             </h4>
                             <span id="inbox-subjects-count" class="text-[11px] font-mono text-slate-400 font-medium">0 unique subjects</span>
                         </div>
                         <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl overflow-hidden">
                             <div id="inbox-subjects-list" class="divide-y divide-slate-200/70 text-xs">
-                                <!-- Dynamic Inbox Subject Breakdown -->
+                                <!-- Dynamic Subject Breakdown -->
                             </div>
                         </div>
                     </div>
@@ -285,12 +285,12 @@
                 <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
                 <div>
                     <span class="text-slate-400">Timestamp:</span>
-                    <span id="modal-time" class="font-mono text-slate-800">Jun 8 @ 14:30:10</span>
+                    <span id="modal-time" class="font-mono text-slate-800">N/A</span>
                 </div>
                 <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
                 <div>
                     <span class="text-slate-400">Relative Delivery:</span>
-                    <span id="modal-seconds-ago" class="font-mono text-indigo-600 font-bold">120 seconds ago</span>
+                    <span id="modal-seconds-ago" class="font-mono text-indigo-600 font-bold">0 seconds ago</span>
                 </div>
             </div>
             <!-- Modal Body Sandbox Viewport -->
@@ -312,7 +312,7 @@
         </div>
     </div>
 
-    <!-- AUDIO AUTOPLAY SAFEGUARD BANNER -->
+    <!-- AUDIO AUTOPLAY BANNER -->
     <div id="audio-toast" class="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-lg text-xs font-medium max-w-xs transition-opacity duration-300">
         <div class="flex items-center gap-2 justify-between">
             <span class="flex items-center gap-1.5"><i class="fa-solid fa-volume-high text-indigo-400"></i> Audio alert initialized for 100% convergence!</span>
@@ -342,12 +342,10 @@
             ]
         };
 
-        // Initialize Audio Player for 100% Convergence Alert
         const successAudio = new Audio('ad.mp3');
         let audioPlayAllowed = false;
         let isAudioPlayingTriggered = false;
 
-        // Autoplay policy gesture unlock
         window.addEventListener('click', () => {
             if (!audioPlayAllowed) {
                 successAudio.play().then(() => {
@@ -404,25 +402,28 @@
         };
 
         let lastScanResults = [];
-        let activeScanMode = 'inbox';
 
         document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Nodes`;
         document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
 
         async function getAccess(refreshToken) {
-            const res = await fetch('https://oauth2.googleapis.com/token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    client_id: CONFIG.clientId,
-                    client_secret: CONFIG.clientSecret,
-                    refresh_token: refreshToken,
-                    grant_type: 'refresh_token',
-                }),
-            });
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
-            return data.access_token;
+            try {
+                const res = await fetch('https://oauth2.googleapis.com/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        client_id: CONFIG.clientId,
+                        client_secret: CONFIG.clientSecret,
+                        refresh_token: refreshToken,
+                        grant_type: 'refresh_token',
+                    }),
+                });
+                const data = await res.json();
+                if (data.error) return null;
+                return data.access_token;
+            } catch (e) {
+                return null;
+            }
         }
 
         function decodeBase64(data) {
@@ -461,6 +462,7 @@
         }
 
         async function fetchSubjects(accessToken, domain, mode) {
+            if (!accessToken) return null;
             try {
                 const folderQuery = mode === 'inbox' ? 'in:inbox' : 'in:spam';
                 const q = encodeURIComponent(`${domain} ${folderQuery}`);
@@ -570,7 +572,7 @@
 
             let subjectsHtml = '';
             if (subjects === null) {
-                subjectsHtml = `<div class="text-rose-600 text-xs font-medium">Authentication token expired for account: ${accName}</div>`;
+                subjectsHtml = `<div class="text-rose-600 text-xs font-medium">Authentication token expired or invalid for account: ${accName}</div>`;
             } else if (subjects.length === 0) {
                 subjectsHtml = `<div class="text-slate-400 text-xs italic">No messages found matching mode [${mode.toUpperCase()}] for target domain</div>`;
             } else {
@@ -668,7 +670,6 @@
 
             const totalAccounts = CONFIG.accounts.length;
 
-            // Map unique subject lines per account
             const accountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
                 curr.subjects.forEach(s => {
@@ -696,7 +697,6 @@
 
             if (topCount > 0) {
                 dom.commonInput.value = topSubject;
-                // Play audio trigger on 100% convergence
                 if (topCount === totalAccounts && !isAudioPlayingTriggered) {
                     successAudio.play().then(() => {
                         isAudioPlayingTriggered = true;
@@ -706,13 +706,11 @@
                 dom.commonInput.value = `No common subjects detected in ${mode.toUpperCase()}.`;
             }
 
-            // Compute Inbox Specific Subject Breakdown
+            // Group subjects and derive percentage match breakdown
             const inboxAccountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
                 curr.subjects.forEach(s => {
-                    if (s.landing !== 'SPAM') {
-                        acc[curr.accName].add(s.subject);
-                    }
+                    acc[curr.accName].add(s.subject);
                 });
                 return acc;
             }, {});
@@ -770,7 +768,6 @@
                 return;
             }
 
-            activeScanMode = mode;
             isAudioPlayingTriggered = false;
             setScanUIState(true, mode);
 
@@ -825,6 +822,7 @@
             }
         }
 
+        // Attach listeners safely
         dom.btnCheckInbox.addEventListener('click', () => runScanSequence('inbox'));
         dom.btnCheckSpam.addEventListener('click', () => runScanSequence('spam'));
 
