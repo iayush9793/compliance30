@@ -149,7 +149,7 @@
                     </div>
                 </div>
 
-                <!-- Interactive Preview Trigger: Displayed only if mail landed in Muskan's Account -->
+                <!-- Interactive Preview Trigger -->
                 <div id="preview-trigger-container" class="hidden animate-slide mt-2 p-4 bg-rose-50 rounded-2xl border border-pink-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center text-pink-500 flex-shrink-0">
@@ -157,7 +157,7 @@
                         </div>
                         <div>
                             <h5 id="preview-trigger-title" class="text-sm font-bold text-[#4a373a] leading-tight">Mail Detected in Muskan's Account</h5>
-                            <p id="preview-trigger-desc" class="text-[11px] text-[#4a373a]/70">Payload verified. Preview is pulled strictly from <strong class="text-pink-600 font-bold">Muskan Sharma</strong> (musk9090) to inspect actual inbox layout.</p>
+                            <p id="preview-trigger-desc" class="text-[11px] text-[#4a373a]/70">Payload verified. Preview is pulled strictly from <strong class="text-pink-600 font-bold">Muskan Sharma</strong> (musk9090) to inspect actual layout.</p>
                         </div>
                     </div>
                     <button id="show-preview-btn" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-pink-500 to-[#ff758f] hover:from-[#ff477e] hover:to-[#ff758f] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-lg shadow-pink-300/30 active:scale-95 flex items-center justify-center gap-2 header-font">
@@ -169,7 +169,7 @@
         </section>
 
         <div class="flex flex-col gap-8">
-            <!-- TOP: Target Domain Entry -->
+            <!-- TOP: Target Domain Entry & Dual Extraction Triggers -->
             <section class="w-full">
                 <div class="bg-white border border-pink-100 rounded-[2.5rem] p-8 shadow-lg relative overflow-hidden shadow-pink-100/30">
                     <div class="flex flex-col lg:flex-row gap-8 items-start relative z-10">
@@ -183,12 +183,18 @@
                                 placeholder="example-sender.com&#10;delivery-node.net"></textarea>
                         </div>
                         <div class="w-full lg:w-72 lg:pt-8 flex flex-col gap-3">
-                            <button id="sync-btn" 
-                                class="group w-full py-5 bg-gradient-to-r from-pink-500 via-rose-400 to-pink-600 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all shadow-lg shadow-pink-300/35 active:scale-[0.97] header-font">
-                                <i class="fa-solid fa-wand-magic-sparkles group-hover:rotate-12 transition-transform"></i>
-                                <span class="tracking-widest uppercase">Sync Network</span>
+                            <!-- Separate Action Buttons for Inbox & Spam Scans -->
+                            <button id="sync-inbox-btn" 
+                                class="group w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-black text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-200 active:scale-[0.97] header-font">
+                                <i class="fa-solid fa-inbox group-hover:scale-110 transition-transform"></i>
+                                <span class="tracking-widest uppercase">Check Inbox Only</span>
                             </button>
-                            <button id="clear-btn" class="hidden w-full py-3 text-pink-400 hover:text-rose-500 text-[10px] font-black transition-colors uppercase tracking-widest">
+                            <button id="sync-spam-btn" 
+                                class="group w-full py-4 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-black text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-rose-200 active:scale-[0.97] header-font">
+                                <i class="fa-solid fa-shield-halved group-hover:rotate-12 transition-transform"></i>
+                                <span class="tracking-widest uppercase">Check Spam Only</span>
+                            </button>
+                            <button id="clear-btn" class="hidden w-full py-2 text-pink-400 hover:text-rose-500 text-[10px] font-black transition-colors uppercase tracking-widest mt-1">
                                 <i class="fa-solid fa-trash-can mr-2"></i> Clear Workspace
                             </button>
                         </div>
@@ -196,23 +202,19 @@
                 </div>
             </section>
 
-            <!-- MIDDLE: Network Feed with Active Spam Filtering control -->
+            <!-- MIDDLE: Data Extraction Feed -->
             <section class="w-full">
                 <div class="bg-white border border-pink-100 rounded-[2.5rem] overflow-hidden shadow-lg min-h-[450px] flex flex-col shadow-pink-100/30">
                     <div class="px-8 py-6 border-b border-pink-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-pink-50/20">
-                        <h3 class="text-base font-black text-[#3d272a] flex items-center gap-3 tracking-tight header-font">
-                            DATA EXTRACTION FEED
-                            <div id="scan-progress" class="hidden h-1.5 w-32 bg-pink-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-pink-400 to-[#ff758f] animate-[loading_2s_infinite]"></div>
-                            </div>
-                        </h3>
-                        
-                        <!-- Toggle Button: Show/Hide Spam Emails dynamically -->
-                        <button id="toggle-spam-btn" class="hidden flex items-center gap-2 px-4 py-2 bg-pink-50/50 border border-pink-100 text-xs font-black text-pink-700 hover:text-pink-900 rounded-xl transition-all active:scale-95">
-                            <i id="toggle-spam-icon" class="fa-solid fa-eye-slash text-pink-400"></i>
-                            <span id="toggle-spam-text">Show Spam Mails</span>
-                            <span id="spam-counter" class="bg-rose-100 text-rose-500 border border-rose-200 px-2 py-0.5 rounded text-[10px]">0 Hidden</span>
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <h3 class="text-base font-black text-[#3d272a] flex items-center gap-3 tracking-tight header-font">
+                                DATA EXTRACTION FEED
+                            </h3>
+                            <span id="active-scan-badge" class="hidden text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider"></span>
+                        </div>
+                        <div id="scan-progress" class="hidden h-1.5 w-32 bg-pink-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-pink-400 to-[#ff758f] animate-[loading_2s_infinite]"></div>
+                        </div>
                     </div>
 
                     <!-- Empty State -->
@@ -221,7 +223,7 @@
                             <i class="fa-solid fa-heart text-3xl text-pink-300"></i>
                         </div>
                         <h4 class="text-lg font-bold text-pink-800/60 mb-1 header-font">Awaiting Domain Sequence</h4>
-                        <p class="text-xs text-pink-400 font-bold uppercase tracking-widest">Input target to initiate sync</p>
+                        <p class="text-xs text-pink-400 font-bold uppercase tracking-widest">Select "Check Inbox" or "Check Spam" to initiate probe</p>
                     </div>
 
                     <!-- Feed Results Container -->
@@ -232,7 +234,7 @@
                                     <tr class="text-pink-400 text-[10px] uppercase tracking-[0.2em] font-black border-b border-pink-50">
                                         <th class="px-8 py-6">Identity</th>
                                         <th class="px-8 py-6">Domain</th>
-                                        <th class="px-8 py-6">Inbox / Spam Subjects (Last 3)</th>
+                                        <th class="px-8 py-6">Retrieved Subjects (Last 3)</th>
                                         <th class="px-8 py-6 text-right">Verification</th>
                                     </tr>
                                 </thead>
@@ -247,10 +249,9 @@
         </div>
     </main>
 
-    <!-- HIGH-FIDELITY SECURE MAIL PREVIEW MODAL -->
+    <!-- MAIL PREVIEW MODAL -->
     <div id="preview-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/20 backdrop-blur-md hidden opacity-0 transition-all duration-300">
         <div class="bg-white border border-pink-100 w-full max-w-4xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] transform scale-95 transition-all duration-300">
-            <!-- Modal Header -->
             <div class="px-8 py-6 border-b border-pink-50 bg-pink-50/20 flex items-center justify-between">
                 <div>
                     <span class="text-[10px] bg-pink-100 text-pink-500 border border-pink-200 px-2.5 py-1 rounded-full font-black uppercase tracking-wider">Muskan Sharma Node Audit</span>
@@ -260,7 +261,6 @@
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <!-- Modal Metadata Panel -->
             <div class="px-8 py-4 bg-pink-50/10 border-b border-pink-50 flex flex-wrap gap-4 items-center text-xs text-pink-700/80 font-semibold">
                 <div class="flex items-center gap-2">
                     <span class="text-pink-400">Audited Node:</span>
@@ -271,37 +271,22 @@
                     <span class="text-pink-400">Network Sync Time:</span>
                     <span id="modal-time" class="text-[#4a373a] font-mono">Jun 8 @ 02:57 PM</span>
                 </div>
-                <div class="w-1.5 h-1.5 rounded-full bg-pink-200"></div>
-                <div class="flex items-center gap-1 bg-rose-100 text-rose-500 px-2 py-0.5 rounded text-[10px] font-bold">
-                    <i class="fa-solid fa-lock"></i> Unopened State Preserved
-                </div>
             </div>
-            <!-- Modal Body Content (Decoded iFrame Viewport) -->
             <div class="flex-grow overflow-y-auto p-8 bg-pink-50/30 relative min-h-[350px]">
-                <!-- fallback raw body layout -->
                 <div id="modal-body-fallback" class="hidden text-[#4a373a] whitespace-pre-wrap leading-relaxed font-mono text-sm bg-white p-6 rounded-2xl border border-pink-100"></div>
-                <!-- rich sandboxed viewport frame to isolate HTML content styles -->
                 <iframe id="modal-body-frame" class="w-full h-full min-h-[380px] border border-pink-100 rounded-2xl bg-white hidden" sandbox="allow-same-origin"></iframe>
             </div>
         </div>
     </div>
 
-    <!-- NOTIFICATION BOX FOR FAILED MUSKAN PREVIEWS -->
+    <!-- NOTIFICATIONS -->
     <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 transition-all duration-300 pointer-events-none">
         <div class="bg-rose-50 border border-rose-200 text-rose-800 px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 font-semibold text-sm">
             <i class="fa-solid fa-triangle-exclamation text-rose-500 text-lg"></i>
             <div>
                 <p class="font-bold">Muskan's Node Sync Issue</p>
-                <p class="text-xs text-rose-600/80">This subject line was not retrieved from the musk9090 node or did not hit the inbox.</p>
+                <p class="text-xs text-rose-600/80">Subject line was not retrieved from the musk9090 node.</p>
             </div>
-        </div>
-    </div>
-
-    <!-- NOTIFICATION FOR AUDIO INITIALIZATION (AUTOPLAY SAFEGUARD) -->
-    <div id="audio-toast" class="fixed bottom-6 left-6 z-50 bg-pink-50 border border-pink-200 text-pink-800 px-4 py-3 rounded-xl shadow-md text-xs font-medium max-w-xs transition-opacity duration-300">
-        <div class="flex items-center gap-2 justify-between">
-            <span>💖 Audio loaded & ready for interactive elements alert!</span>
-            <button onclick="document.getElementById('audio-toast').style.opacity='0'" class="text-pink-500 font-bold hover:text-pink-700">Dismiss</button>
         </div>
     </div>
 
@@ -310,112 +295,51 @@
             clientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
             clientSecret: "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",
             accounts: [
-                { name: "agkartik8429", token: "1//0g0j86Rcxi3QrCgYIARAAGBASNwF-L9Ir-y6PjI7Qr4d5iBkYbc-Tx_ZBQqBUGvnNS0O35qva682RqRzrEP0oQ93rpofm2PzFS6k" },
-                { name: "liveseedforall", token: "1//0gub_tDUPkLESCgYIARAAGBASNwF-L9IrVdFJ0uMmaXYM4AG01a6r7Zpo3uDchB7DNXW0Rkt4oDojH3-9HCrZX5tr8uDFmABRRY0" },
-                { name: "agkartik9090", token: "1//0g1w2jQ29C6fkCgYIARAAGBASNwF-L9Ir1mkqwDP8wVSBC5KaKgh12Z2Myzv46aE2vPX0kJkxrOEo7t_NxyhEXSbp7RQBMsF0a9U" },
-                { name: "ashwinbetterinbox", token: "1//0g9b3FVxpuwAyCgYIARAAGBASNwF-L9IrdygIyobh9VtXocyICT3ngRQ2FNeak5V009iTOzR8xi9xigeqXL2hWac6aFvOVnTIUHU" },
-                { name: "muskan9090", token: "1//0g023PJ2GWaKiCgYIARAAGBASNwF-L9Ir2KCnrDsb90KBj1YyGKYxOc5bx9EU2BIldR7KTrktIj4w6htW3kPDjSkP-0i2jKZyeYo" },
-                { name: "liveseedacc", token: "1//0guqANvb_X5K3CgYIARAAGBASNwF-L9IrqODXDbSdAtPz7GznJrXl0HXkUbcKQ9yqWwda563DfGtAbc8MlFkDZuja-SzHMG7WkXk" },
-                { name: "markanthony", token: "1//0grxNa8fusC2YCgYIARAAGBASNwF-L9IrdqZhvmX93PKx8sHouJqf673pNDWmGLLo9XiKoWlZtMl-L0CFD1BQDyHLZcPG9M6Zen4" },
-                { name: "liveseedmm", token: "1//0gj4AZbhLjWK0CgYIARAAGBASNwF-L9IrKfhgpAfv-20pn5NC72ByHJS-b17sGCNrkV3vTDkiVGV98aGbwn32IKXhx97d0X-KHeg" },
-                { name: "arcsan", token: "1//0gbQkQjqB6dmFCgYIARAAGBASNwF-L9IroUxKSF0oSj2t_9L9l7Bk7inNEepzhDA-DLrpVngouFHoyGl__nEp3OD-2SlbxAofEdM" },
-                { name: "ashwinsiropn", token: "1//0gVEsWZHhysDiCgYIARAAGBASNwF-L9Ir1VA8Wq2OqrP4NB6DBnNAM64bLqlW05jn1p9BXNcgLg6On-w_wa8AS4nVi3P6kaWAYMI" },
-               
-                { name: "andrew", token: "1//0gOn9wriBlZsTCgYIARAAGBASNwF-L9Ir2qMVubLGSXcMw6sxS-FQ0nZrxXXeLZvGF2jGGllfsSynxfeYrACCJ264bhBkZg4TkBA" }
+                { name: "ashwinliveseedforall", token: "1//0gub_tDUPkLESCgYIARAAGBASNwF-L9IrVdFJ0uMmaXYM4AG01a6r7Zpo3uDchB7DNXW0Rkt4oDojH3-9HCrZX5tr8uDFmABRRY0" },
+                { name: "asharyaliveseedacc", token: "1//0guqANvb_X5K3CgYIARAAGBASNwF-L9IrqODXDbSdAtPz7GznJrXl0HXkUbcKQ9yqWwda563DfGtAbc8MlFkDZuja-SzHMG7WkXk" },
+                { name: "liveseedsformm", token: "1//0gj4AZbhLjWK0CgYIARAAGBASNwF-L9IrKfhgpAfv-20pn5NC72ByHJS-b17sGCNrkV3vTDkiVGV98aGbwn32IKXhx97d0X-KHeg" },
+                { name: "arcsann6767", token: "1//0gbQkQjqB6dmFCgYIARAAGBASNwF-L9IroUxKSF0oSj2t_9L9l7Bk7inNEepzhDA-DLrpVngouFHoyGl__nEp3OD-2SlbxAofEdM" },
+                { name: "k97946781", token: "1//0g2yeODI8PUEQCgYIARAAGBASNwF-L9IrtxealwGHzy6g1O6Q5aDBoufFtunoe1PM5PAmQrCbOskO-cBvVW-hGJNqKQw6VhxpmDQ" },
+                { name: "kartikag8429", token: "1//0g0j86Rcxi3QrCgYIARAAGBASNwF-L9Ir-y6PjI7Qr4d5iBkYbc-Tx_ZBQqBUGvnNS0O35qva682RqRzrEP0oQ93rpofm2PzFS6k" },
+                { name: "agkartikag90", token: "1//0g1w2jQ29C6fkCgYIARAAGBASNwF-L9Ir1mkqwDP8wVSBC5KaKgh12Z2Myzv46aE2vPX0kJkxrOEo7t_NxyhEXSbp7RQBMsF0a9U" },
+                { name: "muskansharma90", token: "1//0g023PJ2GWaKiCgYIARAAGBASNwF-L9Ir2KCnrDsb90KBj1YyGKYxOc5bx9EU2BIldR7KTrktIj4w6htW3kPDjSkP-0i2jKZyeYo" },
+                { name: "ashwinaryaop", token: "1//0gVEsWZHhysDiCgYIARAAGBASNwF-L9Ir1VA8Wq2OqrP4NB6DBnNAM64bLqlW05jn1p9BXNcgLg6On-w_wa8AS4nVi3P6kaWAYMI" },
+                { name: "ashwinaryanono", token: "1//0gl06ju2Mpv_UCgYIARAAGBASNwF-L9IrE1u7ohq49G77gxforJWrE25LFW0l9mhJG77uIePV9d76iSKGXi_zDDxMPukjlM-vPxM" },
+                { name: "ashwinnewnononpppp", token: "1//0g0wWqj5ZAgPrCgYIARAAGBASNwF-L9IrSKEzgXu0cAT_3AiFgZaFIvc4JlG6fs6IMVD30O9yteGd5rd53Slq-uWVFozpENTurPI" },
+                { name: "satyam414424", token: "1//0gumKB5PJdWMECgYIARAAGBASNwF-L9IrMUECWwvnDe-zMU4Y6-zLFZPQx3LGZNMCE-6sJ2qzwLa6ZBR9T0L3nw8p__rwRYUPiVM" }
             ]
         };
 
-        // Initialize Audio Player for 100% Inbox Alert (using ad.mp3)
         const successAudio = new Audio('ad.mp3');
         let audioPlayAllowed = false;
 
-        // HIGH VOLUME SYNTHeSIZED "EOOO" AUDIO GENERATOR ON ANY USER INTERACTION
-        function playEoooSound() {
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const ctx = new AudioContext();
-                
-                // Tone 1: Base "E" sound
-                const osc1 = ctx.createOscillator();
-                // Tone 2: Pitch modulated "OOO" layer
-                const osc2 = ctx.createOscillator();
-                
-                const gainNode = ctx.createGain();
-
-                osc1.type = 'sawtooth';
-                osc1.frequency.setValueAtTime(150, ctx.currentTime); // Deep resonant low frequency
-                osc1.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.12);
-
-                osc2.type = 'square';
-                osc2.frequency.setValueAtTime(160, ctx.currentTime);
-                osc2.frequency.exponentialRampToValueAtTime(340, ctx.currentTime + 0.15);
-
-                // Set very high master volume output
-                gainNode.gain.setValueAtTime(0.9, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-
-                osc1.connect(gainNode);
-                osc2.connect(gainNode);
-                gainNode.connect(ctx.destination);
-
-                osc1.start();
-                osc2.start();
-                osc1.stop(ctx.currentTime + 0.4);
-                osc2.stop(ctx.currentTime + 0.4);
-            } catch (e) {
-                console.log("Audio Context execution deferred.", e);
-            }
-        }
-
-        // Global Event Listeners to trigger high volume tone instantly on click or keyboard press
-        window.addEventListener('click', (e) => {
-            playEoooSound();
-            
-            // Original logic for unlocking default audio context safely
+        window.addEventListener('click', () => {
             if (!audioPlayAllowed) {
                 successAudio.play().then(() => {
                     successAudio.pause();
                     successAudio.currentTime = 0;
                     audioPlayAllowed = true;
-                    const audBanner = document.getElementById('audio-toast');
-                    if (audBanner) {
-                        audBanner.style.opacity = '0';
-                        setTimeout(() => audBanner.remove(), 300);
-                    }
                 }).catch(() => {});
             }
-        });
+        }, { once: true });
 
-        window.addEventListener('keydown', () => {
-            playEoooSound();
-        });
-
-        // Inject dynamic account metrics into headers and sidebars
         document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Loaded`;
         document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
 
         const dom = {
             input: document.getElementById('domain-input'),
-            sync: document.getElementById('sync-btn'),
+            syncInbox: document.getElementById('sync-inbox-btn'),
+            syncSpam: document.getElementById('sync-spam-btn'),
             clear: document.getElementById('clear-btn'),
             table: document.getElementById('results-table-container'),
             body: document.getElementById('results-body'),
             empty: document.getElementById('empty-state'),
-            progress: document.getElementById('scan-progress'),
+            scanBadge: document.getElementById('active-scan-badge'),
             commonSec: document.getElementById('common-section'),
             commonInput: document.getElementById('common-subject-input'),
             copy: document.getElementById('copy-btn'),
             percent: document.getElementById('match-percent'),
             matchBar: document.getElementById('match-bar'),
-            
-            // Spam Filter Elements
-            toggleSpamBtn: document.getElementById('toggle-spam-btn'),
-            toggleSpamIcon: document.getElementById('toggle-spam-icon'),
-            toggleSpamText: document.getElementById('toggle-spam-text'),
-            spamCounter: document.getElementById('spam-counter'),
-
-            // Preview Modal Elements
             previewTrigger: document.getElementById('preview-trigger-container'),
             previewTriggerTitle: document.getElementById('preview-trigger-title'),
             previewTriggerDesc: document.getElementById('preview-trigger-desc'),
@@ -431,8 +355,7 @@
         };
 
         let lastResults = [];
-        let showSpamEmails = false; // Spam hidden by default
-        let isAudioPlayingTriggered = false; // Prevent multiple overlapping triggers in same sync run
+        let isAudioPlayingTriggered = false;
 
         async function getAccess(refreshToken) {
             const res = await fetch('https://oauth2.googleapis.com/token', {
@@ -450,7 +373,6 @@
             return data.access_token;
         }
 
-        // Base64 helper safe decoders for Gmail structures
         function decodeBase64(data) {
             try {
                 const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
@@ -470,7 +392,6 @@
                 return decodeBase64(payload.body.data);
             }
             if (payload.parts) {
-                // Prioritize rich html, then plain text
                 let htmlPart = payload.parts.find(p => p.mimeType === 'text/html');
                 if (htmlPart && htmlPart.body && htmlPart.body.data) {
                     return decodeBase64(htmlPart.body.data);
@@ -479,7 +400,6 @@
                 if (plainPart && plainPart.body && plainPart.body.data) {
                     return decodeBase64(plainPart.body.data);
                 }
-                // Recursive lookup loop
                 for (let part of payload.parts) {
                     let recursiveResult = extractGmailBody(part);
                     if (recursiveResult) return recursiveResult;
@@ -488,9 +408,13 @@
             return "";
         }
 
-        async function fetchSubjects(accessToken, domain) {
+        // Updated fetch function with strict target folder filtering
+        async function fetchSubjects(accessToken, domain, mode) {
             try {
-                const q = encodeURIComponent(`${domain} (in:inbox OR in:spam)`);
+                // Precise queries: 'in:inbox' or 'in:spam'
+                const folderQuery = mode === 'inbox' ? 'in:inbox' : 'in:spam';
+                const q = encodeURIComponent(`${domain} ${folderQuery}`);
+                
                 const listRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=3`, {
                     headers: { Authorization: `Bearer ${accessToken}` }
                 });
@@ -507,13 +431,11 @@
                     const headers = msgData.payload.headers;
                     const subject = headers.find(h => h.name === 'Subject')?.value || "(Empty Subject)";
                     
-                    // Exact local timestamp setups
                     const dateRaw = headers.find(h => h.name === 'Date')?.value || "";
                     const dateObj = new Date(dateRaw);
                     const date = isNaN(dateObj) ? "" : dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                     const time = isNaN(dateObj) ? "" : dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
 
-                    // Raw Content extracts for sandbox previews
                     const snippet = msgData.snippet || "";
                     let parsedBody = "";
                     try {
@@ -522,23 +444,16 @@
                         parsedBody = snippet;
                     }
 
-                    // Retrieve tags/labels to register landing folder pathing
                     const labels = msgData.labelIds || [];
-                    let landing = 'OTHER';
+                    let landing = mode.toUpperCase();
                     if (labels.includes('SPAM')) {
                         landing = 'SPAM';
                     } else if (labels.includes('INBOX')) {
-                        if (labels.includes('CATEGORY_PROMOTIONS')) {
-                            landing = 'PROMOTIONS';
-                        } else if (labels.includes('CATEGORY_SOCIAL')) {
-                            landing = 'SOCIAL';
-                        } else if (labels.includes('CATEGORY_UPDATES')) {
-                            landing = 'UPDATES';
-                        } else if (labels.includes('CATEGORY_FORUMS')) {
-                            landing = 'FORUMS';
-                        } else {
-                            landing = 'PRIMARY';
-                        }
+                        if (labels.includes('CATEGORY_PROMOTIONS')) landing = 'PROMOTIONS';
+                        else if (labels.includes('CATEGORY_SOCIAL')) landing = 'SOCIAL';
+                        else if (labels.includes('CATEGORY_UPDATES')) landing = 'UPDATES';
+                        else if (labels.includes('CATEGORY_FORUMS')) landing = 'FORUMS';
+                        else landing = 'PRIMARY';
                     }
 
                     return { subject, date, time, landing, snippet, body: parsedBody || snippet };
@@ -551,12 +466,7 @@
 
             const accountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
-                curr.subjects.forEach(s => {
-                    // STRICT RULE: Only map/count subjects that landed successfully in the INBOX (exclude SPAM)
-                    if (s.landing !== 'SPAM') {
-                        acc[curr.accName].add(s.subject);
-                    }
-                });
+                curr.subjects.forEach(s => acc[curr.accName].add(s.subject));
                 return acc;
             }, {});
 
@@ -590,13 +500,10 @@
                 dom.commonInput.value = topSubject;
                 dom.percent.className = "text-2xl font-black text-rose-500 italic";
                 
-                // Play 'ad.mp3' when it hits 100% Convergence
                 if (!isAudioPlayingTriggered) {
                     successAudio.play().then(() => {
                         isAudioPlayingTriggered = true;
-                    }).catch(err => {
-                        console.log("Audio play deferred or blocked by browser restriction.", err);
-                    });
+                    }).catch(() => {});
                 }
             } else {
                 if (topCount > 1) {
@@ -609,15 +516,12 @@
                 }
             }
 
-            // NEW RULE: Show the preview trigger if email data is successfully retrieved in Muskan's node (musk9090)
             const muskanAccountName = "musk9090";
             const muskanResult = results.find(item => item.accName === muskanAccountName);
             const hasMuskanMails = muskanResult && muskanResult.subjects && muskanResult.subjects.length > 0;
 
             if (hasMuskanMails) {
                 dom.previewTrigger.classList.remove('hidden');
-                
-                // Adjust description depending on match status
                 if (topCount === totalAccounts) {
                     dom.previewTriggerTitle.textContent = "💖 100% Convergence Match Achieved 💖";
                     dom.previewTriggerDesc.innerHTML = `Payload verified across all network nodes. Preview is pulled strictly from <strong class="text-pink-600 font-bold">Muskan Sharma</strong> (musk9090).`;
@@ -628,38 +532,12 @@
             } else {
                 dom.previewTrigger.classList.add('hidden');
             }
-
-            // Calculate Spam visibility counters to configure toggle visibility
-            updateSpamCounterUI();
-        }
-
-        function updateSpamCounterUI() {
-            const spamElements = document.querySelectorAll('.mail-item-spam');
-            const spamCount = spamElements.length;
-
-            if (spamCount > 0) {
-                dom.toggleSpamBtn.classList.remove('hidden');
-                dom.spamCounter.textContent = `${spamCount} Hidden`;
-                dom.spamCounter.classList.remove('hidden');
-            } else {
-                dom.toggleSpamBtn.classList.add('hidden');
-            }
-
-            // Sync visual status of spam elements to global view state variables
-            spamElements.forEach(el => {
-                if (showSpamEmails) {
-                    el.classList.remove('hidden');
-                } else {
-                    el.classList.add('hidden');
-                }
-            });
         }
 
         function renderRow(accName, domain, subjects) {
             const row = document.createElement('tr');
             row.className = "hover:bg-pink-500/[0.02] border-b border-pink-50/50 transition-colors group animate-slide";
             
-            // Highlight Muskan Sharma account specifically in UI
             const isMuskan = (accName === 'musk9090');
             const accountLabel = isMuskan 
                 ? `<span class="text-pink-600 font-black text-sm tracking-tight flex items-center gap-1.5"><i class="fa-solid fa-heart text-xs text-rose-500 animate-pulse"></i>${accName}</span>` 
@@ -676,12 +554,11 @@
             if (subjects === null) {
                 subjectsHtml = `<span class="text-rose-500/80 text-xs font-bold">Please update authentication tokens for ${accName}</span>`;
             } else if (subjects.length === 0) {
-                subjectsHtml = `<span class="text-pink-300 text-xs italic font-medium">Domain match not identified in last inbox scans</span>`;
+                subjectsHtml = `<span class="text-pink-300 text-xs italic font-medium">No matching emails found in selected folder</span>`;
             } else {
                 subjectsHtml = subjects.map((s, i) => {
                     let badgeColor = "bg-pink-100/40 text-pink-600 border border-pink-200/50";
                     let folderIcon = "fa-folder";
-                    let isSpam = false;
                     
                     if (s.landing === 'PRIMARY') {
                         badgeColor = "bg-emerald-50 text-emerald-600 border border-emerald-100";
@@ -689,25 +566,13 @@
                     } else if (s.landing === 'SPAM') {
                         badgeColor = "bg-rose-50 text-rose-500 border border-rose-100";
                         folderIcon = "fa-circle-exclamation";
-                        isSpam = true;
                     } else if (s.landing === 'PROMOTIONS') {
                         badgeColor = "bg-amber-50 text-amber-600 border border-amber-100";
                         folderIcon = "fa-tags";
-                    } else if (s.landing === 'SOCIAL') {
-                        badgeColor = "bg-sky-50 text-sky-600 border border-sky-100";
-                        folderIcon = "fa-users";
-                    } else if (s.landing === 'UPDATES') {
-                        badgeColor = "bg-purple-50 text-purple-600 border border-purple-100";
-                        folderIcon = "fa-bell";
-                    } else if (s.landing === 'FORUMS') {
-                        badgeColor = "bg-teal-50 text-teal-600 border border-teal-100";
-                        folderIcon = "fa-comments";
                     }
 
-                    const spamClass = isSpam ? 'mail-item-spam hidden' : '';
-
                     return `
-                        <div class="mail-item ${spamClass} flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2 p-3 rounded-2xl bg-white border border-pink-100 text-xs hover:border-pink-300 transition-all shadow-sm">
+                        <div class="mail-item flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2 p-3 rounded-2xl bg-white border border-pink-100 text-xs hover:border-pink-300 transition-all shadow-sm">
                             <div class="flex items-center gap-3 overflow-hidden">
                                 <span class="w-5 h-5 flex-shrink-0 flex items-center justify-center text-[8px] font-black bg-pink-50 text-pink-500 rounded-md">${i+1}</span>
                                 <span class="text-[#4a373a] font-bold truncate max-w-[280px]">${s.subject}</span>
@@ -732,41 +597,31 @@
             dom.body.appendChild(row);
         }
 
-        // Toggle Spam fold visibility handler
-        dom.toggleSpamBtn.addEventListener('click', () => {
-            showSpamEmails = !showSpamEmails;
-            const spamElements = document.querySelectorAll('.mail-item-spam');
-
-            if (showSpamEmails) {
-                dom.toggleSpamIcon.className = "fa-solid fa-eye text-rose-500 animate-pulse";
-                dom.toggleSpamText.textContent = "Hide Spam Mails";
-                dom.spamCounter.textContent = `${spamElements.length} Revealed`;
-                dom.spamCounter.className = "bg-rose-100 text-rose-600 border border-rose-200 px-2 py-0.5 rounded text-[10px]";
-                spamElements.forEach(el => el.classList.remove('hidden'));
-            } else {
-                dom.toggleSpamIcon.className = "fa-solid fa-eye-slash text-pink-400";
-                dom.toggleSpamText.textContent = "Show Spam Mails";
-                dom.spamCounter.textContent = `${spamElements.length} Hidden`;
-                dom.spamCounter.className = "bg-rose-50 text-rose-500 border border-rose-100 px-2 py-0.5 rounded text-[10px]";
-                spamElements.forEach(el => el.classList.add('hidden'));
-            }
-        });
-
-        // Trigger network verification pipeline
-        dom.sync.addEventListener('click', async () => {
+        // Shared Extraction Pipeline Handler
+        async function runExtraction(mode) {
             const domains = dom.input.value.split('\n').filter(d => d.trim() !== '');
             if (domains.length === 0) return;
 
-            dom.sync.disabled = true;
-            dom.sync.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i><span class="tracking-widest">PROBING DATA NODE...</span>`;
+            // Set button and UI states
+            dom.syncInbox.disabled = true;
+            dom.syncSpam.disabled = true;
             dom.empty.classList.add('hidden');
             dom.table.classList.remove('hidden');
             dom.clear.classList.remove('hidden');
             dom.commonSec.classList.remove('hidden');
-            dom.previewTrigger.classList.add('hidden'); // Hide preview until check completes
+            dom.previewTrigger.classList.add('hidden');
             dom.body.innerHTML = '';
             lastResults = [];
-            isAudioPlayingTriggered = false; // Reset play flag for new sync
+            isAudioPlayingTriggered = false;
+
+            if (mode === 'inbox') {
+                dom.scanBadge.textContent = "INBOX AUDIT ACTIVE";
+                dom.scanBadge.className = "text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider bg-emerald-100 text-emerald-700 border border-emerald-200";
+            } else {
+                dom.scanBadge.textContent = "SPAM AUDIT ACTIVE";
+                dom.scanBadge.className = "text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200";
+            }
+            dom.scanBadge.classList.remove('hidden');
 
             for (const domain of domains) {
                 const trimmed = domain.trim();
@@ -774,7 +629,7 @@
                 await Promise.all(CONFIG.accounts.map(async (acc) => {
                     try {
                         const token = await getAccess(acc.token);
-                        const subjects = await fetchSubjects(token, trimmed);
+                        const subjects = await fetchSubjects(token, trimmed, mode);
                         renderRow(acc.name, trimmed, subjects);
                         if (subjects && subjects.length > 0) {
                             lastResults.push({ accName: acc.name, subjects });
@@ -786,11 +641,14 @@
             }
 
             calculateCommonality(lastResults);
-            dom.sync.disabled = false;
-            dom.sync.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span class="tracking-widest uppercase">Sync Network</span>`;
-        });
+            dom.syncInbox.disabled = false;
+            dom.syncSpam.disabled = false;
+        }
 
-        // Show Toast Notification if Muskan Preview is unavailable
+        // Attach listeners for both scan buttons
+        dom.syncInbox.addEventListener('click', () => runExtraction('inbox'));
+        dom.syncSpam.addEventListener('click', () => runExtraction('spam'));
+
         function showToast() {
             dom.toast.classList.remove('translate-y-12', 'opacity-0');
             dom.toast.classList.add('translate-y-0', 'opacity-100');
@@ -800,14 +658,10 @@
             }, 5000);
         }
 
-        // Preview Trigger Handler - STRICTLY targeting Muskan Sharma (musk9090)
         dom.showPreviewBtn.addEventListener('click', () => {
             if (lastResults.length === 0) return;
 
-            // Grab the matching top subject value
             const targetSubject = dom.commonInput.value;
-            
-            // Search inside records SPECIFICALLY for Muskan Sharma's account ("musk9090")
             const muskanAccountName = "musk9090";
             const muskanResult = lastResults.find(item => item.accName === muskanAccountName);
 
@@ -816,8 +670,6 @@
                 return;
             }
 
-            // Find a mail that matches the top common subject.
-            // If none matches (or match is less than 100%), fallback to Muskan's latest retrieved email.
             let matchedEmail = muskanResult.subjects.find(s => s.subject === targetSubject);
             if (!matchedEmail && muskanResult.subjects.length > 0) {
                 matchedEmail = muskanResult.subjects[0];
@@ -828,12 +680,10 @@
                 dom.modalAccount.textContent = "musk9090 (Muskan Sharma)";
                 dom.modalTime.textContent = `${matchedEmail.date} @ ${matchedEmail.time}`;
 
-                // Check if rich HTML content or plain snippet is available
                 if (matchedEmail.body && matchedEmail.body.includes('<')) {
                     dom.modalBodyFallback.classList.add('hidden');
                     dom.modalBodyFrame.classList.remove('hidden');
 
-                    // INJECT CSS BLOCK: Complete prevention of link hover states and click events inside the iframe
                     const disableLinkInteractionsCSS = `
                         <style>
                             a, a *, [href], [onclick], button, input[type="submit"] {
@@ -850,7 +700,6 @@
                     dom.modalBodyFallback.textContent = matchedEmail.body || matchedEmail.snippet || "No HTML body structure parsed.";
                 }
 
-                // Open modal with smooth transitions
                 dom.previewModal.classList.remove('hidden');
                 setTimeout(() => {
                     dom.previewModal.classList.remove('opacity-0');
@@ -861,7 +710,6 @@
             }
         });
 
-        // Close preview modal controller
         const hidePreviewModal = () => {
             dom.previewModal.classList.add('opacity-0');
             dom.previewModal.querySelector('div').classList.add('scale-95');
@@ -903,10 +751,9 @@
             dom.clear.classList.add('hidden');
             dom.commonSec.classList.add('hidden');
             dom.previewTrigger.classList.add('hidden');
-            dom.toggleSpamBtn.classList.add('hidden');
+            dom.scanBadge.classList.add('hidden');
             dom.input.value = '';
             lastResults = [];
-            showSpamEmails = false;
         });
     </script>
 </body>
